@@ -5,7 +5,7 @@ import { sweepNoShows } from "@/lib/engine/gate";
 
 export const dynamic = "force-dynamic";
 
-/** Hourly Vercel cron: marks overdue bookings as no shows. */
+/** Vercel cron (daily on Hobby, hourly on Pro): marks overdue bookings as no shows. */
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
   const auth = req.headers.get("authorization");

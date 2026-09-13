@@ -10,7 +10,7 @@ Customers (Agthia business units) raise shipment requests, carriers book a dock 
 - Postgres on Neon, Drizzle ORM with SQL migrations
 - Cookie plus JWT session auth with pre seeded users, no third party provider
 - QR codes generated server side, gate pass PDF via @react-pdf/renderer
-- Deployed on Vercel, hourly cron marks no shows
+- Deployed on Vercel, a daily cron marks no shows
 
 ## Roles and demo logins
 
@@ -82,7 +82,7 @@ Other scripts: `npm run db:generate` (new migration after a schema change), `npm
 
    Calling it again resets the demo data. Add `?seed=false` to run migrations only. You can also run `npm run db:migrate` and `npm run db:seed` locally with `DATABASE_URL` pointing at Neon.
 
-5. The cron in `vercel.json` calls `/api/cron/sweep` every hour to mark overdue bookings as no shows. Admin can also run it from the overview page.
+5. The cron in `vercel.json` calls `/api/cron/sweep` daily at 06:00 Gulf time to mark overdue bookings as no shows (Vercel Hobby allows daily crons only; on Pro you can change it to `0 * * * *`). Admin can also run the check any time from the overview page.
 
 ## Project layout
 
