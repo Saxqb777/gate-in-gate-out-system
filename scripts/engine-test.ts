@@ -96,7 +96,11 @@ async function testEarlyArrivalBump() {
       const cfg = await loadConfig(tx);
       const [carrierOrg] = await tx.select().from(organisations).where(eq(organisations.code, "EMHAUL"));
       const now = new Date();
-      const today = siteDateKey(now);
+      // Late in the day there may be no slots left, so fall back to tomorrow (the bump case then cannot overlap, which the test tolerates).
+      const probe = await getAvailability(tx, cfg, { date: siteDateKey(now), direction: "inbound", handlingMinutes: cfg.defaultHandlingMinutes, now });
+      const leftToday = probe.docks.find((d) => d.dock.code === "DOCK-01")?.slots.filter((s) => s.available).length ?? 0;
+      const today = leftToday >= 2 ? siteDateKey(now) : addDaysKey(siteDateKey(now), 1);
+      console.log(`  info: using ${today} (${leftToday} free DOCK-01 slots left today)`);
 
       // Make every inbound capable dock unusable except DOCK-01 so the decision is deterministic.
       const allDocks = await tx.select().from(docks);
