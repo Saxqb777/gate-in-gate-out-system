@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/jwt";
 import { ROLE_HOME } from "@/lib/auth/roles";
 
-const PUBLIC_PREFIXES = ["/login", "/pass/", "/book/", "/api/gate-pass/", "/api/cron/", "/_next", "/favicon", "/brand"];
+const PUBLIC_PREFIXES = ["/login", "/pass/", "/book/", "/api/gate-pass/", "/api/cron/", "/api/health", "/_next", "/favicon", "/brand"];
 const ROLE_PREFIX: Record<string, string> = {
   "/admin": "admin",
   "/carrier": "carrier",
