@@ -27,6 +27,11 @@ function pad(n: number) {
 
 const PASSWORD = "Foah@2026";
 
+/** Go live reset: wipes operational data, keeps organisations, users, docks, cargo types, config and custom fields. */
+export async function cleanTransactionalData(db: Db) {
+  await db.execute(sql`TRUNCATE TABLE custom_field_values, notifications, audit_log, yard_queue, gate_events, slots, bookings, shipments, reference_sequences RESTART IDENTITY CASCADE`);
+}
+
 async function reset(db: Db) {
   await db.execute(sql`TRUNCATE TABLE custom_field_values, custom_fields, notifications, audit_log, yard_queue, gate_events, slots, bookings, shipments, cargo_types, users, docks, organisations, config_settings, reference_sequences RESTART IDENTITY CASCADE`);
 }

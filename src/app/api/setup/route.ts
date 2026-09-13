@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import path from "path";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { db } from "@/lib/db";
-import { runSeed } from "@/lib/seed";
+import { runSeed, cleanTransactionalData } from "@/lib/seed";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -12,6 +12,10 @@ export const maxDuration = 60;
  * Protected by SETUP_SECRET. Calling it again resets the demo data.
  *   curl -X POST https://<app>/api/setup -H "Authorization: Bearer $SETUP_SECRET"
  *   or open https://<app>/api/setup?token=$SETUP_SECRET in a browser
+ * Modes: default reloads the demo data; ?seed=false runs migrations only;
+ * ?mode=clean removes all shipments, bookings, events, audit rows and
+ * notifications but keeps organisations, users, docks, cargo types, config
+ * and custom fields (use this at go live).
  */
 export async function POST(req: Request) {
   return run(req);
@@ -30,7 +34,10 @@ async function run(req: Request) {
   const log: string[] = [];
   await migrate(db, { migrationsFolder: path.join(process.cwd(), "drizzle") });
   log.push("Migrations applied.");
-  if (url.searchParams.get("seed") !== "false") {
+  if (url.searchParams.get("mode") === "clean") {
+    await cleanTransactionalData(db);
+    log.push("Demo shipments, bookings, gate events, audit rows and notifications removed. Master data kept.");
+  } else if (url.searchParams.get("seed") !== "false") {
     const r = await runSeed(db, (m) => log.push(m));
     log.push(`Seeded ${r.bookings} bookings.`);
   }
