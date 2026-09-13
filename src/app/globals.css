@@ -1,0 +1,119 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: #f6f7f5;
+  --foreground: #1a1d19;
+  --card: #ffffff;
+  --card-foreground: #1a1d19;
+  --popover: #ffffff;
+  --popover-foreground: #1a1d19;
+  --primary: #739a41;
+  --primary-deep: #5b8c2a;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1ea;
+  --secondary-foreground: #1a1d19;
+  --muted: #f0f2ee;
+  --muted-foreground: #6b7268;
+  --accent: #eef3e6;
+  --accent-foreground: #1a1d19;
+  --destructive: #b3412f;
+  --destructive-foreground: #ffffff;
+  --border: #e3e6e0;
+  --input: #d9ddd4;
+  --ring: #739a41;
+  --radius: 0.375rem;
+
+  --status-waiting: #b7791f;
+  --status-waiting-bg: #fbf3e3;
+  --status-progress: #2f6db0;
+  --status-progress-bg: #e7eff9;
+  --status-done: #4f7d2a;
+  --status-done-bg: #e9f1df;
+  --status-exception: #b3412f;
+  --status-exception-bg: #f9e8e5;
+  --status-neutral: #6b7268;
+  --status-neutral-bg: #eeefec;
+
+  --sidebar: #1f2a1a;
+  --sidebar-foreground: #dfe5d8;
+  --sidebar-muted: #93a08a;
+  --sidebar-active: #2d3d25;
+  --sidebar-border: #2b3826;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-deep: var(--primary-deep);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-status-waiting: var(--status-waiting);
+  --color-status-waiting-bg: var(--status-waiting-bg);
+  --color-status-progress: var(--status-progress);
+  --color-status-progress-bg: var(--status-progress-bg);
+  --color-status-done: var(--status-done);
+  --color-status-done-bg: var(--status-done-bg);
+  --color-status-exception: var(--status-exception);
+  --color-status-exception-bg: var(--status-exception-bg);
+  --color-status-neutral: var(--status-neutral);
+  --color-status-neutral-bg: var(--status-neutral-bg);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-border: var(--sidebar-border);
+
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+
+  --font-sans: var(--font-geist-sans), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-size: 14px;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv11", "ss01", "tnum";
+  }
+  h1, h2, h3, h4 {
+    letter-spacing: -0.01em;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media print {
+  aside, header, nav, .no-print { display: none !important; }
+  main { padding: 0 !important; }
+  body { background: white; }
+  .lg\:pl-56 { padding-left: 0 !important; }
+}
