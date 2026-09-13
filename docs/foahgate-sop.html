@@ -1,0 +1,500 @@
+<title>FoahGate Operating Procedures</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #f6f7f5;
+    --surface: #ffffff;
+    --ink: #1a1d19;
+    --muted: #6b7268;
+    --border: #e3e6e0;
+    --line: #eceee9;
+    --green: #739a41;
+    --green-deep: #5b8c2a;
+    --green-tint: #eef3e6;
+    --sidebar: #1f2a1a;
+    --sidebar-ink: #dfe5d8;
+    --sidebar-muted: #93a08a;
+    --waiting: #b7791f; --waiting-bg: #fbf3e3;
+    --progress: #2f6db0; --progress-bg: #e7eff9;
+    --done: #4f7d2a; --done-bg: #e9f1df;
+    --exception: #b3412f; --exception-bg: #f9e8e5;
+    --neutral: #6b7268; --neutral-bg: #eeefec;
+    --code-bg: #f0f2ee;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141814; --surface: #1c221b; --ink: #e7ebe3; --muted: #9aa494; --border: #2e372c; --line: #273025;
+      --green: #8fb85a; --green-deep: #a4c96f; --green-tint: #22301b;
+      --sidebar: #0f140e; --sidebar-ink: #dfe5d8; --sidebar-muted: #8b9784;
+      --waiting: #e0a94a; --waiting-bg: #3a2c12; --progress: #7fb0e8; --progress-bg: #172a40;
+      --done: #9ccb6a; --done-bg: #1f3116; --exception: #ef8a78; --exception-bg: #3e1f1a;
+      --neutral: #9aa494; --neutral-bg: #262c24; --code-bg: #232a22;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #141814; --surface: #1c221b; --ink: #e7ebe3; --muted: #9aa494; --border: #2e372c; --line: #273025;
+    --green: #8fb85a; --green-deep: #a4c96f; --green-tint: #22301b;
+    --sidebar: #0f140e; --sidebar-ink: #dfe5d8; --sidebar-muted: #8b9784;
+    --waiting: #e0a94a; --waiting-bg: #3a2c12; --progress: #7fb0e8; --progress-bg: #172a40;
+    --done: #9ccb6a; --done-bg: #1f3116; --exception: #ef8a78; --exception-bg: #3e1f1a;
+    --neutral: #9aa494; --neutral-bg: #262c24; --code-bg: #232a22;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "Geist", "Inter", system-ui, sans-serif; font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  code, .mono { font-family: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
+  code { background: var(--code-bg); padding: 0.1em 0.4em; border-radius: 4px; }
+  a { color: var(--green-deep); }
+  h1, h2, h3, h4 { text-wrap: balance; line-height: 1.2; margin: 0; letter-spacing: -0.01em; }
+  h1 { font-size: 2rem; font-weight: 700; }
+  h2 { font-size: 1.45rem; font-weight: 650; padding-top: 0.5rem; }
+  h3 { font-size: 1.05rem; font-weight: 600; }
+  p { margin: 0; max-width: 68ch; }
+  ul, ol { margin: 0; padding-left: 1.25rem; max-width: 68ch; }
+  li { margin: 0.25rem 0; }
+  li::marker { color: var(--muted); }
+  .eyebrow { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+  .masthead { background: var(--sidebar); color: var(--sidebar-ink); }
+  .masthead-inner { max-width: 1120px; margin: 0 auto; padding-block: 2.2rem; padding-inline: 20px; display: grid; gap: 1rem; }
+  .masthead .eyebrow { color: var(--sidebar-muted); }
+  .masthead h1 { color: #fff; }
+  .masthead p { color: var(--sidebar-ink); }
+  .meta { display: flex; flex-wrap: wrap; gap: 1.5rem; font-size: 0.85rem; color: var(--sidebar-muted); }
+  .meta b { color: #fff; font-weight: 500; }
+  .brand { display: flex; align-items: center; gap: 0.6rem; }
+  .brand-mark { width: 30px; height: 30px; border-radius: 6px; background: var(--green); display: grid; place-items: center; }
+  .brand-mark svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .page { max-width: 1120px; margin: 0 auto; padding-block: 2rem 4rem; padding-inline: 20px; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 2.5rem; }
+  nav.toc { position: sticky; top: 1.25rem; align-self: start; font-size: 0.86rem; display: grid; gap: 0.2rem; }
+  nav.toc a { color: var(--muted); text-decoration: none; padding: 0.25rem 0.5rem; border-left: 2px solid var(--border); }
+  nav.toc a:hover, nav.toc a:focus-visible { color: var(--ink); border-left-color: var(--green); outline: none; }
+  nav.toc .group { margin-top: 0.6rem; }
+  main { display: grid; gap: 2.75rem; min-width: 0; }
+  section { display: grid; gap: 1rem; scroll-margin-top: 1rem; }
+  .role-head { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .role-chip { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 4px; background: var(--green-tint); color: var(--green-deep); }
+  .who { display: grid; gap: 0.25rem; padding: 0.9rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+  .who dt { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; }
+  .who dd { margin: 0; }
+  .who-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem 2rem; }
+
+  .steps { counter-reset: step; display: grid; gap: 0.6rem; max-width: 68ch; padding: 0; list-style: none; }
+  .steps li { counter-increment: step; display: grid; grid-template-columns: 1.7rem 1fr; gap: 0.6rem; align-items: start; }
+  .steps li::before { content: counter(step); width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--green); color: #fff; font-size: 0.8rem; font-weight: 600; display: grid; place-items: center; margin-top: 0.05rem; }
+  .steps b { font-weight: 600; }
+
+  .rule { border-left: 3px solid var(--green); padding: 0.6rem 0.9rem; background: var(--surface); border-radius: 0 6px 6px 0; max-width: 72ch; }
+  .rule.warn { border-left-color: var(--waiting); }
+  .rule.stop { border-left-color: var(--exception); }
+  .rule .eyebrow { margin-bottom: 0.2rem; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.55rem 0.75rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); font-weight: 600; background: var(--code-bg); white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  td.c { text-align: center; }
+  .yes { color: var(--done); font-weight: 600; }
+  .no { color: var(--muted); }
+  .own { color: var(--progress); font-weight: 600; }
+
+  .pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.74rem; font-weight: 600; padding: 0.12rem 0.5rem; border-radius: 4px; border: 1px solid transparent; white-space: nowrap; }
+  .pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.8; }
+  .waiting { color: var(--waiting); background: var(--waiting-bg); }
+  .progress { color: var(--progress); background: var(--progress-bg); }
+  .done { color: var(--done); background: var(--done-bg); }
+  .exception { color: var(--exception); background: var(--exception-bg); }
+  .neutral { color: var(--neutral); background: var(--neutral-bg); }
+
+  .flow { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: stretch; }
+  .flow .node { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.55rem 0.75rem; min-width: 128px; flex: 1 1 128px; display: grid; gap: 0.15rem; }
+  .flow .node .eyebrow { font-size: 0.66rem; }
+  .flow .node .t { font-weight: 600; font-size: 0.92rem; }
+  .flow .node .s { font-size: 0.8rem; color: var(--muted); }
+  .banner { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem; }
+  .banner .b { border-radius: 6px; padding: 0.8rem 1rem; color: #fff; display: grid; gap: 0.25rem; }
+  .banner .b .big { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.01em; }
+  .banner .b p { color: #fff; opacity: 0.92; font-size: 0.9rem; }
+  .b.granted { background: #4f7d2a; }
+  .b.check { background: #b3412f; }
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.9rem 1rem; display: grid; gap: 0.5rem; align-content: start; }
+  .card h4 { font-size: 0.95rem; font-weight: 600; }
+  .checklist { list-style: none; padding: 0; display: grid; gap: 0.4rem; max-width: 68ch; }
+  .checklist li { display: grid; grid-template-columns: 1.1rem 1fr; gap: 0.5rem; align-items: start; }
+  .checklist li::before { content: ""; width: 0.95rem; height: 0.95rem; border: 1.5px solid var(--muted); border-radius: 3px; margin-top: 0.25rem; }
+  footer { max-width: 1120px; margin: 0 auto; padding-block: 1.5rem; padding-inline: 20px; color: var(--muted); font-size: 0.82rem; border-top: 1px solid var(--border); }
+
+  @media (max-width: 860px) {
+    .page { grid-template-columns: 1fr; gap: 1.5rem; }
+    nav.toc { position: static; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    nav.toc .group { display: none; }
+    nav.toc a { border: 1px solid var(--border); border-radius: 4px; background: var(--surface); }
+    h1 { font-size: 1.6rem; }
+  }
+  @media print {
+    body { background: #fff; color: #000; font-size: 12px; }
+    .masthead { background: #1f2a1a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    nav.toc { display: none; }
+    .page { grid-template-columns: 1fr; padding-block: 1rem; }
+    section { break-inside: avoid-page; }
+    .steps li::before, .pill, .b, .role-chip { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 17h13v-6H3z"/><path d="M16 13h3l2 3v1h-5z"/><circle cx="7" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/><path d="M8 8V5M12 8V4M16 8V6"/></svg></div>
+      <div class="eyebrow">Agthia Group, Al Foah Warehouse</div>
+    </div>
+    <h1>FoahGate Operating Procedures</h1>
+    <p>How each role uses the dock appointment and gate system, step by step, and who is allowed to do what. Written for daily use at the planning desk, the carrier dispatch office, Gate House 1 and the warehouse control room.</p>
+    <div class="meta">
+      <span>Document <b>SOP FG 01</b></span>
+      <span>Version <b>1.0</b></span>
+      <span>Issued <b>13 September 2026</b></span>
+      <span>System <b>foahgate.vercel.app</b></span>
+      <span>Owner <b>Warehouse Manager, Al Foah</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  <nav class="toc" aria-label="Contents">
+    <a href="#overview">How it works</a>
+    <a href="#access">Who has what access</a>
+    <a href="#signin">Signing in</a>
+    <div class="group eyebrow">Procedures</div>
+    <a href="#customer">Customer</a>
+    <a href="#carrier">Carrier</a>
+    <a href="#security">Security</a>
+    <a href="#admin">Admin</a>
+    <div class="group eyebrow">Reference</div>
+    <a href="#statuses">Status meanings</a>
+    <a href="#rules">Rules the system enforces</a>
+    <a href="#accounts">Accounts and go live</a>
+  </nav>
+
+  <main>
+    <section id="overview">
+      <div class="eyebrow">Section 1</div>
+      <h2>How it works in one minute</h2>
+      <p>One shipment is one record from the moment a business unit asks for a truck until that truck leaves the gate. Four roles touch it, each at a different stage. The chain below is the order things happen.</p>
+      <div class="flow" aria-label="Shipment lifecycle">
+        <div class="node"><div class="eyebrow">Customer</div><div class="t">Raise request</div><div class="s">Cargo, date, references</div></div>
+        <div class="node"><div class="eyebrow">Customer</div><div class="t">Assign carrier</div><div class="s">Carrier gets a booking link</div></div>
+        <div class="node"><div class="eyebrow">Carrier</div><div class="t">Book slot</div><div class="s">Truck, driver, dock and time</div></div>
+        <div class="node"><div class="eyebrow">System</div><div class="t">Gate pass</div><div class="s">QR pass, PDF, mobile page</div></div>
+        <div class="node"><div class="eyebrow">Security</div><div class="t">Gate in</div><div class="s">Scan, verify, admit</div></div>
+        <div class="node"><div class="eyebrow">Warehouse</div><div class="t">Dock and handle</div><div class="s">Or wait in the yard</div></div>
+        <div class="node"><div class="eyebrow">Security</div><div class="t">Gate out</div><div class="s">Record leaves, reports update</div></div>
+      </div>
+      <div class="rule">
+        <div class="eyebrow">The one rule everyone should know</div>
+        <p>A truck is only admitted against a valid gate pass. No pass, no entry. Security can still record an exception, but the warehouse admin decides what happens next.</p>
+      </div>
+    </section>
+
+    <section id="access">
+      <div class="eyebrow">Section 2</div>
+      <h2>Who has what access</h2>
+      <p>Each person has exactly one role. The role decides what they see after sign in. Customers see only their own business unit. Carriers see only shipments assigned to their company.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Can do this</th><th>Admin</th><th>Customer</th><th>Carrier</th><th>Security</th></tr></thead>
+          <tbody>
+            <tr><td>Raise a shipment request</td><td class="c yes">Yes</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td></tr>
+            <tr><td>Assign or change the carrier</td><td class="c yes">Yes</td><td class="c own">Own shipments</td><td class="c no">No</td><td class="c no">No</td></tr>
+            <tr><td>Enter truck and driver details, pick a slot</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c own">Assigned to them</td><td class="c no">No</td></tr>
+            <tr><td>View and print gate passes</td><td class="c yes">All</td><td class="c own">Own shipments</td><td class="c own">Own bookings</td><td class="c yes">On scan</td></tr>
+            <tr><td>Cancel a booking before arrival</td><td class="c yes">Any time</td><td class="c own">Own, before booked slot</td><td class="c own">Own, up to 2 h before slot</td><td class="c no">No</td></tr>
+            <tr><td>Approve or reject bookings (if approval mode is on)</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+            <tr><td>Move a booking to another dock or slot</td><td class="c yes">With a reason</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+            <tr><td>Scan passes, gate in, gate out</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c yes">Yes</td></tr>
+            <tr><td>Send to yard, call to dock</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c yes">Yes</td></tr>
+            <tr><td>Start and finish handling at the dock</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c yes">Yes</td></tr>
+            <tr><td>Flag an exception</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c yes">Yes</td></tr>
+            <tr><td>Clear an exception</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+            <tr><td>Live dock board, yard board, slot planner</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+            <tr><td>Block or unblock a slot</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+            <tr><td>See trucks inside and expected today</td><td class="c yes">Yes</td><td class="c own">Own only</td><td class="c own">Own only</td><td class="c yes">Yes</td></tr>
+            <tr><td>Reports and audit log</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+            <tr><td>Docks, organisations, users, cargo types, custom fields, configuration</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Two admin accounts exist on purpose. The warehouse manager account opens on the overview. The warehouse operations account opens straight on the dock board for the control room screen. Both have full admin rights.</p>
+    </section>
+
+    <section id="signin">
+      <div class="eyebrow">Section 3</div>
+      <h2>Signing in</h2>
+      <ol class="steps">
+        <li><span><b>Open the system.</b> Go to <code>foahgate.vercel.app</code>. On a phone, add it to the home screen for one tap access.</span></li>
+        <li><span><b>Pick your role.</b> Admin, Customer, Carrier or Security. The role must match your account or you get a clear error telling you which role your account has.</span></li>
+        <li><span><b>Enter email and password.</b> Accounts are created by the warehouse admin. There is no self registration and no password reset link, ask the admin.</span></li>
+        <li><span><b>You land on your home screen.</b> Sessions last 12 hours. Sign out from your name at the top right.</span></li>
+      </ol>
+      <div class="rule warn">
+        <div class="eyebrow">Shared devices</div>
+        <p>The gate house tablet stays signed in as the Security account for the shift. Sign out at shift end. Never use an admin account on the gate tablet.</p>
+      </div>
+    </section>
+
+    <section id="customer">
+      <div class="eyebrow">Section 4</div>
+      <div class="role-head"><h2>Customer procedure</h2><span class="role-chip">Al Foah Dates, Grand Mills</span></div>
+      <dl class="who who-grid">
+        <div><dt>Who</dt><dd>Supply and logistics planners in the Agthia business unit whose cargo it is.</dd></div>
+        <div><dt>Goal</dt><dd>Tell the warehouse what is coming or going, get a carrier booked, and follow it to gate out.</dd></div>
+        <div><dt>Sees</dt><dd>Only the shipments of their own business unit.</dd></div>
+      </dl>
+
+      <h3>4.1 Raise a shipment request</h3>
+      <ol class="steps">
+        <li><span><b>Overview, New shipment request.</b></span></li>
+        <li><span><b>Direction.</b> Inbound is a delivery to the warehouse (unloading). Outbound is a dispatch (loading).</span></li>
+        <li><span><b>Expected date, priority, cargo type.</b> The cargo type sets how long the truck will hold a dock. Containers reserve two slots. Leave the handling override empty unless the warehouse told you a different time.</span></li>
+        <li><span><b>Cargo description, quantity and unit.</b> Write what the dock team will see: "Khalas dates, field bins, 42 bins".</span></li>
+        <li><span><b>References.</b> Inbound: BL number, PO number. Outbound: invoice number. Container and seal if it is containerised. These print on the gate pass.</span></li>
+        <li><span><b>Carrier.</b> Choose the transport company now, or leave "Assign later". Extra fields under Additional details are set by the warehouse and may be required.</span></li>
+        <li><span><b>Raise shipment request.</b> The reference number appears, for example <code>ALF-INB-2026-00142</code>. Quote it in every conversation about this load.</span></li>
+      </ol>
+
+      <h3>4.2 Assign a carrier</h3>
+      <ol class="steps">
+        <li><span><b>Open the shipment, Assign carrier.</b> Requests without a carrier also appear under Needs your action on the overview.</span></li>
+        <li><span><b>Pick the carrier and confirm.</b> The carrier gets an in-app notification and a booking link. Copy booking link on the shipment page gives you the same link to send by WhatsApp or email.</span></li>
+        <li><span><b>Wait for the carrier.</b> Status changes from Awaiting truck details to Booked once they have picked a slot. You can change the carrier until then.</span></li>
+      </ol>
+
+      <h3>4.3 Track, edit and cancel</h3>
+      <ul>
+        <li>Overview shows today's movements, the next seven days, and anything waiting on you.</li>
+        <li>The shipment page shows the lifecycle stepper, the booked truck and dock, every gate event with its time, and the full history.</li>
+        <li>Edit details is available until the booking is confirmed. After that, ask the warehouse admin.</li>
+        <li>Cancel request is available until the truck arrives. Give a reason, the carrier is notified and the slot is released.</li>
+      </ul>
+      <div class="rule warn">
+        <div class="eyebrow">Amber notice on your overview</div>
+        <p>"Rescheduled by the system" means an early truck was put into the dock your booking was holding, and your booking was moved to the next free slot automatically. Read the new time, then press Acknowledge. Nothing else is needed from you.</p>
+      </div>
+    </section>
+
+    <section id="carrier">
+      <div class="eyebrow">Section 5</div>
+      <div class="role-head"><h2>Carrier procedure</h2><span class="role-chip">Transport companies and Agthia Fleet</span></div>
+      <dl class="who who-grid">
+        <div><dt>Who</dt><dd>Dispatch staff at the transport company.</dd></div>
+        <div><dt>Goal</dt><dd>Put a truck and driver against each assigned shipment, choose a slot, and hand the driver a gate pass.</dd></div>
+        <div><dt>Sees</dt><dd>Only shipments assigned to their company.</dd></div>
+      </dl>
+
+      <h3>5.1 Book a truck against a shipment</h3>
+      <ol class="steps">
+        <li><span><b>Overview, Needs truck details.</b> Or open the booking link the customer sent. Sign in as Carrier if asked.</span></li>
+        <li><span><b>Check the shipment summary.</b> Customer, direction, cargo, expected date and the dock time it will reserve.</span></li>
+        <li><span><b>Truck.</b> Truck plate exactly as on the vehicle, trailer plate if any, truck type, capacity.</span></li>
+        <li><span><b>Driver.</b> Name, mobile, Emirates ID or licence number. Security checks these against the driver at the gate.</span></li>
+        <li><span><b>Pick a slot.</b> The grid shows one column per dock that can take this direction and one row per time. Green is free. Grey slots show why they are not available when you hover. Use the arrows to change the day, up to 14 days ahead. Slots less than 60 minutes away cannot be booked.</span></li>
+        <li><span><b>Confirm booking.</b> If someone took the slot a second earlier you get a message and the grid reloads, pick another. On success the gate pass appears, for example <code>GP-2026-00142</code>.</span></li>
+      </ol>
+
+      <h3>5.2 Give the driver the pass</h3>
+      <ul>
+        <li>Download PDF and print it, or send the PDF to the driver.</li>
+        <li>Open mobile pass gives a phone page with the QR code. Send that link to the driver, it works without signing in.</li>
+        <li>Gate passes lists every pass you have been issued. Reprint from there at any time.</li>
+        <li>The QR code holds a random token, not the reference number. A pass cannot be guessed or edited.</li>
+      </ul>
+
+      <h3>5.3 Cancel or change</h3>
+      <ul>
+        <li>Cancel booking is allowed until 2 hours before the slot. Give a reason. The customer is notified and the slot is freed for others.</li>
+        <li>To change the truck or the time after booking, cancel and book again, or ask the warehouse admin to move it.</li>
+        <li>If the warehouse enables approval mode, the pass shows Pending approval and is not valid at the gate until an admin approves it.</li>
+      </ul>
+      <div class="rule">
+        <div class="eyebrow">Tell your drivers</div>
+        <p>Arrive within the slot. A truck that arrives early may be admitted straight to a free dock, or it waits in the yard. A truck that has not arrived 60 minutes after the slot ends is marked as a no show, which counts in the carrier performance report.</p>
+      </div>
+    </section>
+
+    <section id="security">
+      <div class="eyebrow">Section 6</div>
+      <div class="role-head"><h2>Security procedure</h2><span class="role-chip">Gate House 1, phone or tablet</span></div>
+      <dl class="who who-grid">
+        <div><dt>Who</dt><dd>The guard on duty at the gate.</dd></div>
+        <div><dt>Goal</dt><dd>Admit only valid trucks, send each one to the right place, record every movement with a time.</dd></div>
+        <div><dt>Sees</dt><dd>Scan screen, trucks inside now, trucks expected today.</dd></div>
+      </dl>
+
+      <h3>6.1 A truck arrives</h3>
+      <ol class="steps">
+        <li><span><b>Scan the QR code</b> on the driver's printed pass or phone, using Scan QR with camera. Or type the gate pass number or shipment reference and press Look up.</span></li>
+        <li><span><b>Read the banner.</b></span></li>
+      </ol>
+      <div class="banner">
+        <div class="b granted"><div class="big">GRANTED</div><p>Pass is valid for entry now. Compare the truck plate, the driver and the ID with the card, then press Gate in.</p></div>
+        <div class="b check"><div class="big">CHECK</div><p>Something is wrong and the reasons are listed: pass already used, booking cancelled, truck already inside, waiting for approval. Do not admit unless the warehouse tells you to. You can still Gate in with a written reason, or Flag exception.</p></div>
+      </div>
+      <ol class="steps" start="3">
+        <li><span><b>Press Gate in.</b> The system decides where the truck goes and shows it in large text. Tell the driver.</span></li>
+      </ol>
+      <div class="two">
+        <div class="card"><h4>Green result: Proceed to DOCK-03</h4><p>The truck goes straight to that dock. If it arrived early, the screen also says it was promoted into a free dock. If its booked dock was busy, it says it was redirected.</p></div>
+        <div class="card"><h4>Amber result: Wait in yard, position 2</h4><p>No compatible dock is free. Direct the truck to the yard. It is called to a dock later by the warehouse, or by you with Call to first free dock.</p></div>
+      </div>
+
+      <h3>6.2 While the truck is inside</h3>
+      <ul>
+        <li><b>Inside now</b> lists every truck inside with its location and how long it has been in. Open any row to get back to its card.</li>
+        <li><b>Send to yard</b> moves a truck off a dock or from the gate to the yard, for example when the dock is not ready.</li>
+        <li><b>Call to first free dock</b> moves a yard truck to the first compatible dock that is free.</li>
+        <li><b>Expected</b> lists today's booked trucks that have not arrived, with their slot time, so you know who is due.</li>
+      </ul>
+
+      <h3>6.3 A truck leaves</h3>
+      <ol class="steps">
+        <li><span><b>Look up the pass again</b> (scan, or open it from Inside now).</span></li>
+        <li><span><b>Press Gate out.</b> If handling is complete this is one tap. If handling is not complete, the system asks for a note explaining why the truck is leaving. Write it.</span></li>
+      </ol>
+
+      <h3>6.4 Something is wrong</h3>
+      <ol class="steps">
+        <li><span><b>Press Flag exception.</b> Choose the problem: wrong truck plate, documents missing, damaged seal, driver does not match, other.</span></li>
+        <li><span><b>Write what you see.</b> For example "Truck plate is AD 55 90121, pass shows AD 12345". The admin team is notified immediately.</span></li>
+        <li><span><b>Hold the truck.</b> The admin clears the exception and tells you whether to admit it, send it to the yard, or turn it away.</span></li>
+      </ol>
+      <div class="rule stop">
+        <div class="eyebrow">Never</div>
+        <p>Never admit a truck without pressing Gate in, and never let one leave without Gate out. Every timestamp in the reports comes from these two buttons.</p>
+      </div>
+    </section>
+
+    <section id="admin">
+      <div class="eyebrow">Section 7</div>
+      <div class="role-head"><h2>Admin procedure</h2><span class="role-chip">Warehouse manager and control room</span></div>
+      <dl class="who who-grid">
+        <div><dt>Who</dt><dd>Warehouse manager and operations supervisors.</dd></div>
+        <div><dt>Goal</dt><dd>Keep the docks moving, resolve exceptions, keep the setup correct, and read the numbers.</dd></div>
+        <div><dt>Sees</dt><dd>Everything, across all customers and carriers.</dd></div>
+      </dl>
+
+      <h3>7.1 Daily routine</h3>
+      <ol class="steps">
+        <li><span><b>Start of day, Overview.</b> Booked today, still to arrive, exceptions, no shows. Needs attention lists approvals, exceptions, yard trucks and overdue arrivals with a link to each.</span></li>
+        <li><span><b>Keep the Dock board open</b> on the control room screen (the warehouse operations account lands there). It refreshes every 15 seconds. Each dock shows the truck on it, how long it has been there, and the next three bookings.</span></li>
+        <li><span><b>At the dock:</b> Start handling when work begins, Finish handling when done. The truck then shows Completed and security can gate it out.</span></li>
+        <li><span><b>Yard board:</b> Call to dock when a compatible dock frees up. Choose the dock or take the first free one.</span></li>
+        <li><span><b>End of day, Run no show check</b> on the overview. It also runs automatically every morning at 06:00.</span></li>
+      </ol>
+
+      <h3>7.2 Decisions on a booking</h3>
+      <p>Open any booking from Bookings, the dock board, the yard, or a notification. The action bar shows only the actions that make sense for its current status.</p>
+      <ul>
+        <li><b>Approve or Reject</b> (approval mode only). Rejecting needs a reason and releases the slot.</li>
+        <li><b>Move to another slot.</b> Pick a new dock and time on the grid and write the reason. Carrier and customer are notified with your reason.</li>
+        <li><b>Cancel booking.</b> Any time before gate out, with a reason.</li>
+        <li><b>Clear exception.</b> Decide where the truck continues from: Booked (turned away, may return), Arrived, In yard, or At dock. Write the decision note.</li>
+        <li><b>Gate out with note.</b> For a truck that must leave before handling is complete.</li>
+        <li>The Audit trail at the bottom of the page shows every change, who made it, when, and what changed.</li>
+      </ul>
+
+      <h3>7.3 Slot planner</h3>
+      <ul>
+        <li>One day at a time, every dock, every slot. Booked cells link to the booking.</li>
+        <li><b>Block</b> a slot with a reason (forklift maintenance, stock count). Carriers cannot book it. <b>Unblock</b> to reopen.</li>
+        <li>Taking a whole dock out of service is done under Docks, status Maintenance or Blocked. Bookings already on that dock must be moved from the bookings list.</li>
+      </ul>
+
+      <h3>7.4 Setup pages</h3>
+      <div class="two">
+        <div class="card"><h4>Docks</h4><p>Code, name, type (inbound, outbound, both), status, notes. Type decides which shipments a dock is offered for.</p></div>
+        <div class="card"><h4>Cargo types</h4><p>Each type carries handling minutes. This is how much dock time a booking reserves. Set these with the dock team.</p></div>
+        <div class="card"><h4>Organisations and Users</h4><p>Add carriers and business units, then their users. A user's role must match the organisation type. Disable users who leave, do not delete.</p></div>
+        <div class="card"><h4>Custom fields</h4><p>Add fields to the customer shipment form or the carrier booking form: text, number, date, dropdown, checkbox, document reference. They appear immediately and print on the pass.</p></div>
+        <div class="card"><h4>Configuration</h4><p>Operating hours, slot length, buffer, max concurrent trucks, early arrival rule, late tolerance, no show timer, approval mode, booking horizon, lead time, cancel cutoff, truck types, units, gate pass text.</p></div>
+        <div class="card"><h4>Reports and Audit log</h4><p>Trucks per day, turnaround, dock utilisation, on time versus late by carrier, no shows, exceptions, with CSV download. The audit log is filterable and cannot be edited.</p></div>
+      </div>
+      <div class="rule warn">
+        <div class="eyebrow">Changing the slot grid</div>
+        <p>Changing operating hours, slot length or buffer regenerates all open future slots. Existing bookings keep their times. Do it outside operating hours and check the slot planner afterwards.</p>
+      </div>
+    </section>
+
+    <section id="statuses">
+      <div class="eyebrow">Section 8</div>
+      <h2>Status meanings</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Status</th><th>Meaning</th><th>Who acts next</th></tr></thead>
+          <tbody>
+            <tr><td><span class="pill neutral">Awaiting carrier</span></td><td>Request raised, no carrier chosen.</td><td>Customer</td></tr>
+            <tr><td><span class="pill waiting">Awaiting truck details</span></td><td>Carrier assigned, truck and slot not yet provided.</td><td>Carrier</td></tr>
+            <tr><td><span class="pill waiting">Pending approval</span></td><td>Slot chosen, waiting for admin (approval mode only).</td><td>Admin</td></tr>
+            <tr><td><span class="pill progress">Booked</span></td><td>Slot confirmed, gate pass valid.</td><td>Driver arrives, Security</td></tr>
+            <tr><td><span class="pill progress">Arrived</span></td><td>Gated in, placement being decided.</td><td>System</td></tr>
+            <tr><td><span class="pill waiting">In yard</span></td><td>Inside, waiting for a dock, with a queue position.</td><td>Admin or Security</td></tr>
+            <tr><td><span class="pill progress">At dock</span></td><td>Truck positioned at its dock.</td><td>Dock team</td></tr>
+            <tr><td><span class="pill progress">Handling</span></td><td>Loading or unloading in progress.</td><td>Dock team</td></tr>
+            <tr><td><span class="pill done">Completed</span></td><td>Handling finished, truck may leave.</td><td>Security</td></tr>
+            <tr><td><span class="pill done">Gated out</span></td><td>Truck has left. Record closed.</td><td>Nobody</td></tr>
+            <tr><td><span class="pill neutral">Cancelled</span></td><td>Cancelled by customer, carrier or admin, with a reason.</td><td>Nobody</td></tr>
+            <tr><td><span class="pill exception">No show</span></td><td>Did not arrive within 60 minutes after the slot ended.</td><td>Carrier rebooks if needed</td></tr>
+            <tr><td><span class="pill exception">Rejected</span></td><td>Admin rejected the booking, slot released.</td><td>Carrier</td></tr>
+            <tr><td><span class="pill exception">Exception</span></td><td>Flagged at the gate, needs an admin decision.</td><td>Admin</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="rules">
+      <div class="eyebrow">Section 9</div>
+      <h2>Rules the system enforces</h2>
+      <p>These are not guidelines, the software applies them. All the numbers come from the Configuration page and can be changed by an admin.</p>
+      <div class="two">
+        <div class="card"><h4>No double booking</h4><p>Two carriers cannot book the same dock for overlapping time, even if they click at the same second. The database refuses the second one and the carrier is told to pick another slot.</p></div>
+        <div class="card"><h4>Slots come from the grid</h4><p>06:00 to 22:00, 60 minute slots, 15 minute buffer between them. A booking holds as many consecutive slots as its cargo type needs.</p></div>
+        <div class="card"><h4>Early arrival rule</h4><p>A truck gated in before its slot goes straight to a compatible dock that is free for its full handling time. If the only free dock is held by a later booking, that booking is moved to the next free slot and both parties are notified. If nothing is free, the truck waits in the yard.</p></div>
+        <div class="card"><h4>Arrival timing</h4><p>Trucks may arrive up to 4 hours early. Later than 30 minutes after slot start counts as late in reports. 60 minutes after the slot ends with no gate in becomes a no show.</p></div>
+        <div class="card"><h4>Booking window</h4><p>Carriers can book up to 14 days ahead and no closer than 60 minutes before a slot. Carriers cannot cancel within 2 hours of the slot.</p></div>
+        <div class="card"><h4>Everything is logged</h4><p>Every status change, move, cancellation, approval, configuration change and login is written to the audit log with the person and the exact time. It cannot be edited.</p></div>
+      </div>
+    </section>
+
+    <section id="accounts">
+      <div class="eyebrow">Section 10</div>
+      <h2>Accounts and go live</h2>
+      <h3>10.1 Demo accounts</h3>
+      <p>Password for every demo account is <code>Foah@2026</code>.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Role</th><th>Email</th><th>Organisation</th></tr></thead>
+          <tbody>
+            <tr><td>Admin</td><td class="mono">admin@agthia.ae</td><td>Agthia warehouse, opens on Overview</td></tr>
+            <tr><td>Admin</td><td class="mono">warehouse@agthia.ae</td><td>Agthia warehouse, opens on Dock board</td></tr>
+            <tr><td>Security</td><td class="mono">security@agthia.ae</td><td>Gate House 1</td></tr>
+            <tr><td>Carrier</td><td class="mono">ops@alwafi-transport.ae</td><td>Al Wafi Transport LLC</td></tr>
+            <tr><td>Carrier</td><td class="mono">ops@emirates-haulage.ae</td><td>Emirates Haulage</td></tr>
+            <tr><td>Customer</td><td class="mono">planner@alfoah.ae</td><td>Al Foah Dates</td></tr>
+            <tr><td>Customer</td><td class="mono">planner@grandmills.ae</td><td>Grand Mills</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>10.2 Go live checklist</h3>
+      <ul class="checklist">
+        <li>Run the clean reset once. It removes all demo shipments, bookings, gate events and audit rows and keeps organisations, users, docks, cargo types, configuration and custom fields.</li>
+        <li>Change every seeded password from Admin, Users. Disable any demo account that is not needed.</li>
+        <li>Add the real carriers and business units under Organisations, then their users.</li>
+        <li>Confirm dock names, types and cargo handling minutes with the dock team.</li>
+        <li>Review Configuration with the warehouse manager: hours, slot length, early arrival rule, approval mode.</li>
+        <li>Set the gate tablet up with the Security account and the camera permission allowed.</li>
+        <li>Print this document and keep a copy at the gate house and the planning desk.</li>
+      </ul>
+    </section>
+  </main>
+</div>
+<footer>FoahGate operating procedures, version 1.0. Agthia Group PJSC, Al Foah Warehouse, Al Ain. Times in this system are Gulf Standard Time.</footer>

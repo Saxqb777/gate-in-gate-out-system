@@ -84,6 +84,10 @@ Other scripts: `npm run db:generate` (new migration after a schema change), `npm
 
 5. The cron in `vercel.json` calls `/api/cron/sweep` daily at 06:00 Gulf time to mark overdue bookings as no shows (Vercel Hobby allows daily crons only; on Pro you can change it to `0 * * * *`). Admin can also run the check any time from the overview page.
 
+## Operating procedures
+
+`docs/foahgate-sop.html` is the printable standard operating procedure: one chapter per role, the access matrix, status meanings, the rules the system enforces and the go live checklist. Open it in a browser and print to PDF.
+
 ## Project layout
 
 ```
