@@ -74,7 +74,7 @@ Other scripts: `npm run db:generate` (new migration after a schema change), `npm
    | `SETUP_SECRET` | random string, protects the setup endpoint |
    | `SITE_TIMEZONE` | `Asia/Dubai` |
 
-4. Deploy. Then run the migrations and load the demo data once:
+4. Deploy. Environment variables only apply to deployments created after they were saved, so redeploy after adding them. Then run the migrations and load the demo data once:
 
    ```bash
    curl -X POST https://<your-app>/api/setup -H "Authorization: Bearer <SETUP_SECRET>"
