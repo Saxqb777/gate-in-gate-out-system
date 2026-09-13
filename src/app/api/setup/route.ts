@@ -5,7 +5,7 @@ import { db } from "@/lib/db";
 import { runSeed } from "@/lib/seed";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 120;
+export const maxDuration = 60;
 
 /**
  * One time setup for a fresh deployment: runs migrations and loads the demo data.
