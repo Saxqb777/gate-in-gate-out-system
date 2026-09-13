@@ -17,6 +17,8 @@ export async function loginAction(_prev: LoginState, formData: FormData): Promis
   const next = String(formData.get("next") ?? "");
 
   if (!email || !password) return { error: "Enter your email and password." };
+  if (!process.env.AUTH_SECRET || process.env.AUTH_SECRET.length < 16) return { error: "The server is not configured yet: AUTH_SECRET is missing. Ask the administrator to set it." };
+  if (!process.env.DATABASE_URL) return { error: "The server is not configured yet: DATABASE_URL is missing. Ask the administrator to set it." };
   if (!["admin", "carrier", "customer", "security"].includes(role)) return { error: "Choose the role you are signing in as." };
 
   const [row] = await db

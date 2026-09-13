@@ -11,6 +11,7 @@ import { RescheduleAlert } from "@/components/app/reschedule-alert";
 import { GATE_EVENT_LABEL, EXCEPTION_LABEL, BOOKING_STATUS_META } from "@/lib/status";
 import { fmtDate, fmtDateTime, fmtDateTimeSeconds, fmtTime, siteDateKey } from "@/lib/time";
 import { ShipmentActions } from "./shipment-actions";
+import { appBaseUrl } from "@/components/app/gate-pass";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ export default async function CustomerShipmentPage({ params }: { params: Promise
   const canAssign = ["DRAFT", "AWAITING_TRUCK_DETAILS"].includes(status);
   const canEdit = ["DRAFT", "AWAITING_TRUCK_DETAILS", "PENDING_APPROVAL"].includes(status);
   const canCancel = ["DRAFT", "AWAITING_TRUCK_DETAILS", "PENDING_APPROVAL", "BOOKED"].includes(status);
-  const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "";
+  const base = appBaseUrl();
   const bookingLink = s.carrierOrgId ? `${base}/book/${b.bookingLinkToken}` : null;
   const notices = b.rescheduledBySystem && !b.rescheduleAcknowledged ? [{ bookingId: b.id, reference: s.reference, title: "", body: `now ${dock?.code ?? ""} at ${fmtDateTime(b.slotStart)}${b.originalSlotStart ? `, was ${fmtDateTime(b.originalSlotStart)}` : ""}. ${b.rescheduleReason ?? ""}`, href: `/customer/shipments/${s.id}`, notificationIds: [] }] : [];
   const customItems = values.map((v) => ({ label: v.field.label, value: v.field.fieldType === "checkbox" ? (v.value === "true" ? "Yes" : "No") : v.value }));

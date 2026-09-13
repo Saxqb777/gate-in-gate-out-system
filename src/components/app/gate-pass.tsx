@@ -5,9 +5,15 @@ import { BookingStatusBadge } from "./status-badge";
 import { fmtDate, fmtTime } from "@/lib/time";
 import { cn } from "@/lib/utils";
 
+export function appBaseUrl() {
+  const explicit = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "");
+  if (explicit) return explicit;
+  const vercel = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+  return vercel ? `https://${vercel}` : "";
+}
+
 export function passUrl(qrToken: string) {
-  const base = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "";
-  return `${base}/pass/${qrToken}`;
+  return `${appBaseUrl()}/pass/${qrToken}`;
 }
 
 export async function qrDataUrl(qrToken: string) {
