@@ -11,7 +11,7 @@ import { RescheduleAlert } from "@/components/app/reschedule-alert";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CARRIER_CANCELLABLE, GATE_EVENT_LABEL, EXCEPTION_LABEL, BOOKING_STATUS_META } from "@/lib/status";
 import { fmtDate, fmtDateTime, fmtDateTimeSeconds, siteDateKey, addDaysKey } from "@/lib/time";
-import { BookingForm } from "./booking-form";
+import { BookingForm } from "@/components/app/booking-form";
 import { PassActions } from "./pass-actions";
 
 export const dynamic = "force-dynamic";

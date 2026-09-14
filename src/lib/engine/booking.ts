@@ -182,7 +182,10 @@ export async function submitBooking(tx: Tx, actor: SessionUser, cfg: SiteConfig,
   const [shipment] = await tx.select().from(shipments).where(eq(shipments.id, booking.shipmentId));
   if (!shipment) throw new ActionError("Shipment not found.");
   if (actor.role === "carrier" && shipment.carrierOrgId !== actor.organisationId) throw new ActionError("This booking is not assigned to your company.");
+  if (actor.role === "customer" && shipment.customerOrgId !== actor.organisationId) throw new ActionError("This shipment does not belong to your organisation.");
+  if (!shipment.carrierOrgId) throw new ActionError("Assign a carrier before entering truck details.");
   if (booking.status !== "AWAITING_TRUCK_DETAILS") throw new ActionError("This booking already has truck details. Cancel it first to rebook.");
+  const onBehalf = actor.role !== "carrier";
 
   const handlingMinutes = await getHandlingMinutes(tx, shipment, cfg);
   const window = await lockWindow(tx, { slotId: input.slotId, handlingMinutes, direction: shipment.direction });
@@ -232,16 +235,31 @@ export async function submitBooking(tx: Tx, actor: SessionUser, cfg: SiteConfig,
     actorUserId: actor.id,
     before: bookingSnapshot(booking),
     after: bookingSnapshot(updated),
+    reason: onBehalf ? `Truck details entered by ${actor.organisationName} on behalf of the carrier` : null,
   });
-  await notify(tx, {
-    organisationId: shipment.customerOrgId,
-    level: "info",
-    title: `${shipment.reference} ${status === "BOOKED" ? "booked" : "awaiting approval"}`,
-    body: `${actor.organisationName} booked ${dock?.code ?? "a dock"} at ${fmtDateTime(window.slotStart, cfg.siteTimezone)}. Truck ${updated.truckPlate}, driver ${updated.driverName}.`,
-    href: `/customer/shipments/${shipment.id}`,
-    entityType: "booking",
-    entityId: booking.id,
-  });
+  const summary = `${dock?.code ?? "a dock"} at ${fmtDateTime(window.slotStart, cfg.siteTimezone)}. Truck ${updated.truckPlate}, driver ${updated.driverName}.`;
+  if (onBehalf) {
+    await notify(tx, {
+      organisationId: shipment.carrierOrgId,
+      level: "info",
+      title: `${shipment.reference} booked on your behalf`,
+      body: `${actor.organisationName} entered the truck details and booked ${summary} Open the booking to print the gate pass.`,
+      href: `/carrier/bookings/${booking.id}`,
+      entityType: "booking",
+      entityId: booking.id,
+    });
+  }
+  if (actor.role !== "customer") {
+    await notify(tx, {
+      organisationId: shipment.customerOrgId,
+      level: "info",
+      title: `${shipment.reference} ${status === "BOOKED" ? "booked" : "awaiting approval"}`,
+      body: `${actor.organisationName} booked ${summary}`,
+      href: `/customer/shipments/${shipment.id}`,
+      entityType: "booking",
+      entityId: booking.id,
+    });
+  }
   if (status === "PENDING_APPROVAL") {
     await notify(tx, {
       role: "admin",

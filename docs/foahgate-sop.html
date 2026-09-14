@@ -153,8 +153,8 @@
     <p>How each role uses the dock appointment and gate system, step by step, and who is allowed to do what. Written for daily use at the planning desk, the carrier dispatch office, Gate House 1 and the warehouse control room.</p>
     <div class="meta">
       <span>Document <b>SOP FG 01</b></span>
-      <span>Version <b>1.0</b></span>
-      <span>Issued <b>13 September 2026</b></span>
+      <span>Version <b>1.1</b></span>
+      <span>Issued <b>14 September 2026</b></span>
       <span>System <b>foahgate.vercel.app</b></span>
       <span>Owner <b>Warehouse Manager, Al Foah</b></span>
     </div>
@@ -207,7 +207,7 @@
           <tbody>
             <tr><td>Raise a shipment request</td><td class="c yes">Yes</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td></tr>
             <tr><td>Assign or change the carrier</td><td class="c yes">Yes</td><td class="c own">Own shipments</td><td class="c no">No</td><td class="c no">No</td></tr>
-            <tr><td>Enter truck and driver details, pick a slot</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c own">Assigned to them</td><td class="c no">No</td></tr>
+            <tr><td>Enter truck and driver details, pick a slot</td><td class="c yes">Yes</td><td class="c own">Own, on the carrier's behalf</td><td class="c own">Assigned to them</td><td class="c no">No</td></tr>
             <tr><td>View and print gate passes</td><td class="c yes">All</td><td class="c own">Own shipments</td><td class="c own">Own bookings</td><td class="c yes">On scan</td></tr>
             <tr><td>Cancel a booking before arrival</td><td class="c yes">Any time</td><td class="c own">Own, before booked slot</td><td class="c own">Own, up to 2 h before slot</td><td class="c no">No</td></tr>
             <tr><td>Approve or reject bookings (if approval mode is on)</td><td class="c yes">Yes</td><td class="c no">No</td><td class="c no">No</td><td class="c no">No</td></tr>
@@ -267,8 +267,12 @@
       <ol class="steps">
         <li><span><b>Open the shipment, Assign carrier.</b> Requests without a carrier also appear under Needs your action on the overview.</span></li>
         <li><span><b>Pick the carrier and confirm.</b> The carrier gets an in-app notification and a booking link. Copy booking link on the shipment page gives you the same link to send by WhatsApp or email.</span></li>
-        <li><span><b>Wait for the carrier.</b> Status changes from Awaiting truck details to Booked once they have picked a slot. You can change the carrier until then.</span></li>
+        <li><span><b>Wait for the carrier, or do it yourself.</b> Status changes from Awaiting truck details to Booked once a slot is picked. You can change the carrier until then.</span></li>
       </ol>
+      <div class="rule">
+        <div class="eyebrow">Two ways to complete a booking, one record</div>
+        <p>Every booking needs the same four things: truck, driver, dock and time. Either the carrier enters them in their own login after receiving the link, or the planner presses <b>Enter truck details myself</b> on the shipment page and enters them on the carrier's behalf. Use the second route for small carriers with no office staff or when the dispatcher has already sent you the details by phone. The carrier is notified, the gate pass appears in their account too, and the audit trail records who entered the details.</p>
+      </div>
 
       <h3>4.3 Track, edit and cancel</h3>
       <ul>
@@ -294,7 +298,7 @@
 
       <h3>5.1 Book a truck against a shipment</h3>
       <ol class="steps">
-        <li><span><b>Overview, Needs truck details.</b> Or open the booking link the customer sent. Sign in as Carrier if asked.</span></li>
+        <li><span><b>Overview, Needs truck details.</b> Or open the booking link the customer sent. Sign in as Carrier if asked. If the planner has already entered the truck details for you, the booking shows as Booked and you only need to print the pass.</span></li>
         <li><span><b>Check the shipment summary.</b> Customer, direction, cargo, expected date and the dock time it will reserve.</span></li>
         <li><span><b>Truck.</b> Truck plate exactly as on the vehicle, trailer plate if any, truck type, capacity.</span></li>
         <li><span><b>Driver.</b> Name, mobile, Emirates ID or licence number. Security checks these against the driver at the gate.</span></li>
@@ -497,4 +501,4 @@
     </section>
   </main>
 </div>
-<footer>FoahGate operating procedures, version 1.0. Agthia Group PJSC, Al Foah Warehouse, Al Ain. Times in this system are Gulf Standard Time.</footer>
+<footer>FoahGate operating procedures, version 1.1. Agthia Group PJSC, Al Foah Warehouse, Al Ain. Times in this system are Gulf Standard Time.</footer>

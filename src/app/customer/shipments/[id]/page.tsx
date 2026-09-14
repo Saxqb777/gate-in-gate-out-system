@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth/guard";
 import { getConfig } from "@/lib/config";
-import { getBookingRowByShipment, bookingEvents, bookingAudit, customValuesFor, customFieldsFor, allCargoTypes, allOrganisations } from "@/lib/queries/bookings";
+import { getBookingRowByShipment, bookingEvents, bookingAudit, customValuesFor, customFieldsFor, allCargoTypes, allOrganisations, rowHandlingMinutes } from "@/lib/queries/bookings";
 import { PageHeader } from "@/components/app/page-header";
 import { DescriptionList, Section } from "@/components/app/description-list";
 import { BookingStatusBadge, DirectionBadge, PriorityBadge, TonePill } from "@/components/app/status-badge";
@@ -9,8 +9,10 @@ import { BookingTimeline } from "@/components/app/booking-timeline";
 import { StatusStepper } from "@/components/app/status-stepper";
 import { RescheduleAlert } from "@/components/app/reschedule-alert";
 import { GATE_EVENT_LABEL, EXCEPTION_LABEL, BOOKING_STATUS_META } from "@/lib/status";
-import { fmtDate, fmtDateTime, fmtDateTimeSeconds, fmtTime, siteDateKey } from "@/lib/time";
+import { fmtDate, fmtDateTime, fmtDateTimeSeconds, fmtTime, siteDateKey, addDaysKey } from "@/lib/time";
 import { ShipmentActions } from "./shipment-actions";
+import { BookingForm } from "@/components/app/booking-form";
+import { SelfBookToggle } from "./self-book-toggle";
 import { appBaseUrl } from "@/components/app/gate-pass";
 
 export const dynamic = "force-dynamic";
@@ -29,6 +31,8 @@ export default async function CustomerShipmentPage({ params }: { params: Promise
   const base = appBaseUrl();
   const bookingLink = s.carrierOrgId ? `${base}/book/${b.bookingLinkToken}` : null;
   const notices = b.rescheduledBySystem && !b.rescheduleAcknowledged ? [{ bookingId: b.id, reference: s.reference, title: "", body: `now ${dock?.code ?? ""} at ${fmtDateTime(b.slotStart)}${b.originalSlotStart ? `, was ${fmtDateTime(b.originalSlotStart)}` : ""}. ${b.rescheduleReason ?? ""}`, href: `/customer/shipments/${s.id}`, notificationIds: [] }] : [];
+  const bookingFields = status === "AWAITING_TRUCK_DETAILS" ? await customFieldsFor("booking", "customer") : [];
+  const today = siteDateKey();
   const customItems = values.map((v) => ({ label: v.field.label, value: v.field.fieldType === "checkbox" ? (v.value === "true" ? "Yes" : "No") : v.value }));
   const customValues: Record<string, string> = {};
   for (const v of values) customValues[String(v.field.id)] = v.value ?? "";
@@ -112,7 +116,22 @@ export default async function CustomerShipmentPage({ params }: { params: Promise
                 ]}
               />
             ) : (
-              <p className="text-sm text-muted-foreground">{carrier ? "Carrier has not added truck details yet." : "Assign a carrier to start the booking."}</p>
+              <div className="grid gap-3">
+                <p className="text-sm text-muted-foreground">{carrier ? "Carrier has not added truck details yet." : "Assign a carrier to start the booking."}</p>
+                {carrier && status === "AWAITING_TRUCK_DETAILS" && (
+                  <SelfBookToggle carrierName={carrier.name}>
+                    <BookingForm
+                      bookingId={b.id}
+                      truckTypes={cfg.truckTypes}
+                      customFields={bookingFields.map((f) => ({ id: f.id, label: f.label, fieldKey: f.fieldKey, fieldType: f.fieldType, optionsJson: f.optionsJson, required: f.required, helpText: f.helpText }))}
+                      initialDate={s.expectedDate < today ? today : s.expectedDate}
+                      minDate={today}
+                      maxDate={addDaysKey(today, cfg.bookingHorizonDays)}
+                      handlingMinutes={rowHandlingMinutes(row, cfg.defaultHandlingMinutes)}
+                    />
+                  </SelfBookToggle>
+                )}
+              </div>
             )}
             {bookingLink && (
               <div className="mt-4 rounded border bg-muted/50 px-3 py-2 text-xs">

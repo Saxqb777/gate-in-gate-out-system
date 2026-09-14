@@ -32,12 +32,13 @@ function revalidateAll() {
 
 export async function getAvailabilityAction(bookingId: number, date: string): Promise<ActionResult<AvailabilityResult>> {
   return runAction(async () => {
-    const actor = await actionSession("carrier", "admin");
+    const actor = await actionSession("carrier", "admin", "customer");
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new ActionError("Pick a date.");
     const [b] = await db.select().from(bookings).where(eq(bookings.id, bookingId));
     if (!b) throw new ActionError("Booking not found.");
     const [s] = await db.select().from(shipments).where(eq(shipments.id, b.shipmentId));
     if (actor.role === "carrier" && s.carrierOrgId !== actor.organisationId) throw new ActionError("Not your booking.");
+    if (actor.role === "customer" && s.customerOrgId !== actor.organisationId) throw new ActionError("Not your shipment.");
     const cfg = await loadConfig();
     const data = await db.transaction(async (tx) => {
       const handlingMinutes = await getHandlingMinutes(tx, s, cfg);
@@ -49,7 +50,7 @@ export async function getAvailabilityAction(bookingId: number, date: string): Pr
 
 export async function submitBookingAction(bookingId: number, input: TruckInput): Promise<ActionResult<{ gatePassNumber: string | null; status: string }>> {
   return runAction(async () => {
-    const actor = await actionSession("carrier", "admin");
+    const actor = await actionSession("carrier", "admin", "customer");
     const parsed = truckSchema.safeParse(input);
     if (!parsed.success) throw new ActionError(parsed.error.issues[0]?.message ?? "Please check the form.");
     const cfg = await loadConfig();
