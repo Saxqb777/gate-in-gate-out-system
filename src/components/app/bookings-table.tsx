@@ -16,7 +16,7 @@ const HEAD: Record<BookingColumn, string> = {
   carrier: "Carrier",
   cargo: "Cargo",
   quantity: "Qty",
-  docs: "BL / Invoice",
+  docs: "Order no.",
   plate: "Truck",
   driver: "Driver",
   dock: "Dock",
@@ -93,7 +93,7 @@ function cell(c: BookingColumn, row: BookingRow, linkFor: (row: BookingRow) => s
     case "quantity":
       return s.quantity != null ? `${s.quantity} ${s.uom ?? ""}` : "";
     case "docs":
-      return <span className="font-mono text-xs">{s.blNumber ?? s.invoiceNumber ?? s.containerNumber ?? ""}</span>;
+      return <span className="font-mono text-xs">{s.poNumber ?? s.blNumber ?? s.invoiceNumber ?? ""}</span>;
     case "plate":
       return b.truckPlate ? <span className="font-mono text-[13px]">{b.truckPlate}</span> : <span className="text-muted-foreground">Pending</span>;
     case "driver":

@@ -10,13 +10,13 @@ import { assignCarrierAction } from "@/lib/actions/shipments";
 
 export type CarrierOption = { id: number; name: string };
 
-export function AssignCarrierInline({ shipmentId, carriers, currentId, label }: { shipmentId: number; carriers: CarrierOption[]; currentId?: number | null; label?: string }) {
+export function AssignCarrierInline({ shipmentId, carriers, currentId, label, size = "sm" }: { shipmentId: number; carriers: CarrierOption[]; currentId?: number | null; label?: string; size?: "sm" | "default" }) {
   const [open, setOpen] = useState(false);
   const [carrierId, setCarrierId] = useState(currentId ? String(currentId) : "");
   const { run, pending, error, setError } = useAction();
   return (
     <>
-      <Button size="sm" variant={currentId ? "outline" : "default"} onClick={() => setOpen(true)}>
+      <Button size={size} variant={currentId ? "outline" : "default"} onClick={() => setOpen(true)}>
         {label ?? (currentId ? "Change carrier" : "Assign carrier")}
       </Button>
       <Dialog open={open} onOpenChange={(o) => { if (!pending) { setOpen(o); setError(null); } }}>

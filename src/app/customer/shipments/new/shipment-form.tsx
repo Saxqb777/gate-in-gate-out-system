@@ -23,6 +23,8 @@ export type ShipmentFormProps = {
   customFields: CustomFieldDef[];
   initial?: Partial<ShipmentInput> & { customValues?: Record<string, string> };
   redirectBase: string;
+  /** Which id to append to redirectBase after creating. Customers open the shipment, admins open the booking. */
+  redirectKey?: "shipmentId" | "bookingId";
   onDone?: () => void;
 };
 
@@ -33,7 +35,6 @@ export function ShipmentForm(p: ShipmentFormProps) {
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [errs, setErrs] = useState<Record<string, string>>({});
-  const [showAll, setShowAll] = useState(false);
   const i = p.initial ?? {};
   const [f, setF] = useState({
     direction: (i.direction ?? "inbound") as "inbound" | "outbound",
@@ -55,7 +56,6 @@ export function ShipmentForm(p: ShipmentFormProps) {
   });
   const [custom, setCustom] = useState<Record<string, string>>(i.customValues ?? {});
   const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setF({ ...f, [k]: e.target.value });
-  const inbound = f.direction === "inbound";
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -92,7 +92,7 @@ export function ShipmentForm(p: ShipmentFormProps) {
         const res = await createShipmentAction(input);
         if (!res.ok) return setError(res.error);
         toast.success(res.message ?? "Shipment raised.");
-        router.push(`${p.redirectBase}/${res.data!.shipmentId}`);
+        router.push(`${p.redirectBase}/${p.redirectKey === "bookingId" ? res.data!.bookingId : res.data!.shipmentId}`);
       } else {
         const res = await updateShipmentAction(p.shipmentId!, input);
         if (!res.ok) return setError(res.error);
@@ -164,18 +164,9 @@ export function ShipmentForm(p: ShipmentFormProps) {
         <Field label="Handling time override (min)" htmlFor="handlingMinutes" hint="Leave empty to use the cargo type default">
           <Input id="handlingMinutes" type="number" min={5} max={600} value={f.handlingMinutes} onChange={set("handlingMinutes")} />
         </Field>
-      </FormSection>
-      <FormSection title="References" description={inbound ? "Documents the truck brings with it." : "Documents that travel with the load."}>
-        {(inbound || showAll) && <Field label="BL number" htmlFor="blNumber"><Input id="blNumber" value={f.blNumber} onChange={set("blNumber")} className="font-mono" /></Field>}
-        {(inbound || showAll) && <Field label="PO number" htmlFor="poNumber"><Input id="poNumber" value={f.poNumber} onChange={set("poNumber")} className="font-mono" /></Field>}
-        {(!inbound || showAll) && <Field label="Invoice number" htmlFor="invoiceNumber"><Input id="invoiceNumber" value={f.invoiceNumber} onChange={set("invoiceNumber")} className="font-mono" /></Field>}
-        <Field label="Container number" htmlFor="containerNumber"><Input id="containerNumber" value={f.containerNumber} onChange={set("containerNumber")} className="font-mono uppercase" /></Field>
-        <Field label="Seal number" htmlFor="sealNumber"><Input id="sealNumber" value={f.sealNumber} onChange={set("sealNumber")} className="font-mono" /></Field>
-        <div className="flex items-end">
-          <button type="button" className="text-xs text-primary-deep hover:underline" onClick={() => setShowAll(!showAll)}>
-            {showAll ? "Show fewer references" : "Show all references"}
-          </button>
-        </div>
+        <Field label="Order number" htmlFor="poNumber" hint="Your internal order or document number. Printed on the gate pass.">
+          <Input id="poNumber" value={f.poNumber} onChange={set("poNumber")} className="font-mono" />
+        </Field>
       </FormSection>
       {p.mode === "create" && (
         <FormSection title="Carrier" description="The carrier receives a booking link to add truck details and pick a slot. You can also assign later.">

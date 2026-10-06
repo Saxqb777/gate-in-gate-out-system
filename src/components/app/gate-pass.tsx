@@ -38,7 +38,7 @@ export function passFields(row: BookingRow, customValues: PassValue[] = []): Pas
   ];
   if (s.containerNumber || s.sealNumber) items.push({ label: "Container and seal", value: `${s.containerNumber ?? ""}${s.sealNumber ? ` / seal ${s.sealNumber}` : ""}` });
   if (s.blNumber) items.push({ label: "BL number", value: s.blNumber });
-  if (s.poNumber) items.push({ label: "PO number", value: s.poNumber });
+  if (s.poNumber) items.push({ label: "Order number", value: s.poNumber });
   if (s.invoiceNumber) items.push({ label: "Invoice", value: s.invoiceNumber });
   items.push(
     { label: "Booked slot", value: slotStart ? `${fmtDate(slotStart)}, ${fmtTime(slotStart)} to ${fmtTime(slotEnd)}` : "No slot" },

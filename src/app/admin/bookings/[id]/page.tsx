@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { requireRole } from "@/lib/auth/guard";
 import { getConfig } from "@/lib/config";
-import { getBookingRow, bookingEvents, bookingAudit, customValuesFor, listBookings, allDocks, rowHandlingMinutes } from "@/lib/queries/bookings";
+import { getBookingRow, bookingEvents, bookingAudit, customValuesFor, customFieldsFor, listBookings, allDocks, allOrganisations, rowHandlingMinutes } from "@/lib/queries/bookings";
 import { diffSummary } from "@/lib/queries/audit";
 import { PageHeader } from "@/components/app/page-header";
 import { DescriptionList, Section, TableSection } from "@/components/app/description-list";
@@ -15,6 +15,8 @@ import { arrivalClass } from "@/lib/engine/gate";
 import { GATE_EVENT_LABEL, EXCEPTION_LABEL, BOOKING_STATUS_META } from "@/lib/status";
 import { fmtDate, fmtDateTime, fmtDateTimeSeconds, fmtTime, humanDuration, minutesBetween, siteDateKey, addDaysKey } from "@/lib/time";
 import { BookingActions } from "./booking-actions";
+import { BookingForm } from "@/components/app/booking-form";
+import { AssignCarrierInline } from "@/app/customer/shipments/[id]/assign-carrier";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +26,8 @@ export default async function AdminBookingPage({ params }: { params: Promise<{ i
   const row = await getBookingRow(Number(id));
   if (!row) notFound();
   const { booking: b, shipment: s, customer, carrier, dock, cargoType } = row;
-  const [cfg, events, audit, shipValues, bookValues, onDock, docks] = await Promise.all([getConfig(), bookingEvents(b.id), bookingAudit(b.id, s.id), customValuesFor("shipment", s.id), customValuesFor("booking", b.id), listBookings({ statuses: ["AT_DOCK", "HANDLING", "COMPLETED"] }), allDocks()]);
+  const [cfg, events, audit, shipValues, bookValues, onDock, docks, carriers, bookingFields] = await Promise.all([getConfig(), bookingEvents(b.id), bookingAudit(b.id, s.id), customValuesFor("shipment", s.id), customValuesFor("booking", b.id), listBookings({ statuses: ["AT_DOCK", "HANDLING", "COMPLETED"] }), allDocks(), allOrganisations("carrier"), customFieldsFor("booking", "admin")]);
+  const canAssign = ["DRAFT", "AWAITING_TRUCK_DETAILS"].includes(b.status);
   const occupied = new Set(onDock.map((x) => x.booking.dockId));
   const freeDocks = docks.filter((d) => d.status === "active" && !occupied.has(d.id) && (d.type === "both" || d.type === s.direction)).map((d) => ({ id: d.id, code: d.code, name: d.name }));
   const arrival = b.arrivedAt && b.originalSlotStart ? arrivalClass({ slotStart: b.originalSlotStart, slotEnd: b.slotEnd }, cfg, b.arrivedAt) : null;
@@ -53,8 +56,16 @@ export default async function AdminBookingPage({ params }: { params: Promise<{ i
       <div className="mb-4 grid gap-3">
         <StatusStepper status={b.status} />
         <Section title="Actions">
-          <BookingActions bookingId={b.id} reference={s.reference} status={b.status} initialDate={b.slotStart ? fmtDateKey(b.slotStart) : s.expectedDate < today ? today : s.expectedDate} minDate={today} maxDate={addDaysKey(today, cfg.bookingHorizonDays)} freeDocks={freeDocks} />
+          <div className="flex flex-wrap items-start gap-2">
+            {canAssign && <AssignCarrierInline shipmentId={s.id} carriers={carriers.filter((c) => c.active).map((c) => ({ id: c.id, name: c.name }))} currentId={s.carrierOrgId} size="default" />}
+            <BookingActions bookingId={b.id} reference={s.reference} status={b.status} initialDate={b.slotStart ? fmtDateKey(b.slotStart) : s.expectedDate < today ? today : s.expectedDate} minDate={today} maxDate={addDaysKey(today, cfg.bookingHorizonDays)} freeDocks={freeDocks} />
+          </div>
         </Section>
+        {b.status === "AWAITING_TRUCK_DETAILS" && carrier && (
+          <Section title={`Truck details on behalf of ${carrier.name}`} description="Enter the truck, driver and slot the carrier gave you. The carrier is notified and gets the gate pass in their account.">
+            <BookingForm bookingId={b.id} truckTypes={cfg.truckTypes} customFields={bookingFields.map((f) => ({ id: f.id, label: f.label, fieldKey: f.fieldKey, fieldType: f.fieldType, optionsJson: f.optionsJson, required: f.required, helpText: f.helpText }))} initialDate={s.expectedDate < today ? today : s.expectedDate} minDate={today} maxDate={addDaysKey(today, cfg.bookingHorizonDays)} handlingMinutes={rowHandlingMinutes(row, cfg.defaultHandlingMinutes)} />
+          </Section>
+        )}
       </div>
       <div className="grid gap-4 xl:grid-cols-[1fr_400px]">
         <div className="grid gap-4">
@@ -104,7 +115,7 @@ export default async function AdminBookingPage({ params }: { params: Promise<{ i
                 { label: "BL number", value: s.blNumber, mono: true },
                 { label: "Container", value: s.containerNumber, mono: true },
                 { label: "Seal", value: s.sealNumber, mono: true },
-                { label: "PO number", value: s.poNumber, mono: true },
+                { label: "Order number", value: s.poNumber, mono: true },
                 { label: "Invoice", value: s.invoiceNumber, mono: true },
                 { label: "Notes", value: s.notes },
                 { label: "Raised", value: fmtDateTime(s.createdAt) },

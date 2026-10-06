@@ -39,7 +39,7 @@ export default async function CarrierBookingPage({ params }: { params: Promise<{
     { label: "BL number", value: s.blNumber, mono: true },
     { label: "Container", value: s.containerNumber, mono: true },
     { label: "Seal", value: s.sealNumber, mono: true },
-    { label: "PO number", value: s.poNumber, mono: true },
+    { label: "Order number", value: s.poNumber, mono: true },
     { label: "Invoice", value: s.invoiceNumber, mono: true },
     { label: "Notes", value: s.notes },
     ...shipmentValues.filter((v) => (v.field.visibleToRoles ?? []).includes("carrier")).map((v) => ({ label: v.field.label, value: v.field.fieldType === "checkbox" ? (v.value === "true" ? "Yes" : "No") : v.value })),

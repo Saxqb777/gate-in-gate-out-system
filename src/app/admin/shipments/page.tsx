@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { requireRole } from "@/lib/auth/guard";
+import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/app/page-header";
 import { TableSection } from "@/components/app/description-list";
 import { BookingsTable } from "@/components/app/bookings-table";
@@ -34,7 +36,7 @@ export default async function AdminShipments({ searchParams }: { searchParams: P
   ]);
   return (
     <>
-      <PageHeader title="Shipments" description="Requests raised by every business unit." crumbs={[{ label: "Admin", href: "/admin" }, { label: "Shipments" }]} />
+      <PageHeader title="Shipments" description="Requests raised by every business unit." crumbs={[{ label: "Admin", href: "/admin" }, { label: "Shipments" }]} actions={<Button asChild><Link href="/admin/shipments/new">New shipment</Link></Button>} />
       <ListFilters
         fields={[
           { key: "customer", label: "Customer", type: "select", options: customers.map((c) => ({ value: String(c.id), label: c.name })) },
