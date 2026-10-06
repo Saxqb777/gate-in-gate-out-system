@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { getSession, ROLE_HOME } from "@/lib/auth/session";
 import { LoginForm } from "./login-form";
 import { Logo } from "@/components/app/logo";
+import { getConfig } from "@/lib/config";
+import { DEMO_ACCOUNTS } from "./demo-accounts";
 
 export const metadata = { title: "Sign in" };
 
@@ -9,6 +11,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const session = await getSession();
   if (session) redirect(ROLE_HOME[session.role]);
   const { next } = await searchParams;
+  let demoAccounts: typeof DEMO_ACCOUNTS | undefined;
+  try {
+    const cfg = await getConfig();
+    if (cfg.demoLogins) demoAccounts = DEMO_ACCOUNTS;
+  } catch {
+    demoAccounts = undefined;
+  }
   return (
     <div className="flex min-h-screen">
       <div className="hidden w-[46%] flex-col justify-between bg-sidebar p-10 text-sidebar-foreground lg:flex">
@@ -41,7 +50,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <h2 className="text-lg font-semibold">Sign in</h2>
           <p className="mt-1 text-sm text-muted-foreground">Select your role, then enter your email and password.</p>
           <div className="mt-5">
-            <LoginForm next={next} />
+            <LoginForm next={next} demoAccounts={demoAccounts} />
           </div>
         </div>
       </div>

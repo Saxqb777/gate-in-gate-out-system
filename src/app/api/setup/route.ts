@@ -35,8 +35,8 @@ async function run(req: Request) {
   await migrate(db, { migrationsFolder: path.join(process.cwd(), "drizzle") });
   log.push("Migrations applied.");
   if (url.searchParams.get("mode") === "clean") {
-    await cleanTransactionalData(db);
-    log.push("Demo shipments, bookings, gate events, audit rows and notifications removed. Master data kept.");
+    await cleanTransactionalData(db, { goLive: true });
+    log.push("Demo shipments, bookings, gate events, audit rows and notifications removed. Master data kept. Demo accounts hidden from the sign in page.");
   } else if (url.searchParams.get("seed") !== "false") {
     const r = await runSeed(db, (m) => log.push(m));
     log.push(`Seeded ${r.bookings} bookings.`);

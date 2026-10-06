@@ -26,11 +26,14 @@ export default async function ConfigPage() {
       <div className="grid gap-4">
         {ORDER.map((g) => (
           <Section key={g} title={CONFIG_GROUP_LABELS[g]} description={DESCRIPTIONS[g]}>
-            <ConfigGroupForm defs={CONFIG_DEFS.filter((d) => d.group === g).sort((a, b) => a.sortOrder - b.sortOrder)} values={cfg.raw} warning={g === "slots" ? "Changing the slot grid regenerates open future slots. Existing bookings keep their times." : undefined} />
+            <ConfigGroupForm defs={CONFIG_DEFS.filter((d) => d.group === g && d.key !== "demo_logins").sort((a, b) => a.sortOrder - b.sortOrder)} values={cfg.raw} warning={g === "slots" ? "Changing the slot grid regenerates open future slots. Existing bookings keep their times." : undefined} />
           </Section>
         ))}
         <Section title="Demo data" description="For demonstrations only. Reset the operational data between client meetings.">
-          <DemoReset />
+          <div className="grid gap-5">
+            <ConfigGroupForm defs={CONFIG_DEFS.filter((d) => d.key === "demo_logins")} values={cfg.raw} />
+            <DemoReset />
+          </div>
         </Section>
       </div>
     </>

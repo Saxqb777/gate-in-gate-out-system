@@ -21,6 +21,7 @@ export const CONFIG_DEFS: ConfigDef[] = [
   { key: "site_code", label: "Site code", description: "Used as the prefix of shipment reference numbers, for example ALF.", group: "site", type: "string", default: "ALF", sortOrder: 1 },
   { key: "site_name", label: "Site name", description: "Shown on gate passes and reports.", group: "site", type: "string", default: "Al Foah Warehouse, Al Ain", sortOrder: 2 },
   { key: "site_timezone", label: "Site timezone", description: "All slots and timestamps are shown in this timezone.", group: "site", type: "string", default: "Asia/Dubai", sortOrder: 3 },
+  { key: "demo_logins", label: "Show demo accounts on the sign in page", description: "When on, the sign in page lists the demo accounts and one click signs in. Turned off automatically by the go live reset.", group: "site", type: "boolean", default: "true", sortOrder: 5 },
   { key: "yard_capacity", label: "Yard capacity", description: "Maximum number of trucks that can wait in the yard at one time. Security is warned when this is reached.", group: "site", type: "number", default: "20", sortOrder: 4 },
 
   { key: "operating_start", label: "Operating hours start", description: "First slot of the day starts at this time.", group: "slots", type: "time", default: "06:00", sortOrder: 10 },
@@ -60,6 +61,7 @@ export type SiteConfig = {
   siteName: string;
   siteTimezone: string;
   yardCapacity: number;
+  demoLogins: boolean;
   operatingStart: string;
   operatingEnd: string;
   slotMinutes: number;
@@ -107,6 +109,7 @@ function parseConfig(raw: Record<string, string>): SiteConfig {
     siteName: get("site_name"),
     siteTimezone: get("site_timezone"),
     yardCapacity: num("yard_capacity"),
+    demoLogins: bool("demo_logins"),
     operatingStart: get("operating_start"),
     operatingEnd: get("operating_end"),
     slotMinutes: num("slot_minutes"),
