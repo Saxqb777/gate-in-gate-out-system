@@ -16,6 +16,7 @@ import { GATE_EVENT_LABEL, EXCEPTION_LABEL, BOOKING_STATUS_META } from "@/lib/st
 import { fmtDate, fmtDateTime, fmtDateTimeSeconds, fmtTime, humanDuration, minutesBetween, siteDateKey, addDaysKey } from "@/lib/time";
 import { BookingActions } from "./booking-actions";
 import { BookingForm } from "@/components/app/booking-form";
+import { GatePass, qrDataUrl } from "@/components/app/gate-pass";
 import { AssignCarrierInline } from "@/app/customer/shipments/[id]/assign-carrier";
 
 export const dynamic = "force-dynamic";
@@ -28,6 +29,8 @@ export default async function AdminBookingPage({ params }: { params: Promise<{ i
   const { booking: b, shipment: s, customer, carrier, dock, cargoType } = row;
   const [cfg, events, audit, shipValues, bookValues, onDock, docks, carriers, bookingFields] = await Promise.all([getConfig(), bookingEvents(b.id), bookingAudit(b.id, s.id), customValuesFor("shipment", s.id), customValuesFor("booking", b.id), listBookings({ statuses: ["AT_DOCK", "HANDLING", "COMPLETED"] }), allDocks(), allOrganisations("carrier"), customFieldsFor("booking", "admin")]);
   const canAssign = ["DRAFT", "AWAITING_TRUCK_DETAILS"].includes(b.status);
+  const qr = b.qrToken && b.gatePassNumber ? await qrDataUrl(b.qrToken) : null;
+  const next = nextStep(b.status, carrier?.name);
   const occupied = new Set(onDock.map((x) => x.booking.dockId));
   const freeDocks = docks.filter((d) => d.status === "active" && !occupied.has(d.id) && (d.type === "both" || d.type === s.direction)).map((d) => ({ id: d.id, code: d.code, name: d.name }));
   const arrival = b.arrivedAt && b.originalSlotStart ? arrivalClass({ slotStart: b.originalSlotStart, slotEnd: b.slotEnd }, cfg, b.arrivedAt) : null;
@@ -55,7 +58,7 @@ export default async function AdminBookingPage({ params }: { params: Promise<{ i
       </div>
       <div className="mb-4 grid gap-3">
         <StatusStepper status={b.status} />
-        <Section title="Actions">
+        <Section title={`Next step: ${next.title}`} description={next.hint}>
           <div className="flex flex-wrap items-start gap-2">
             {canAssign && <AssignCarrierInline shipmentId={s.id} carriers={carriers.filter((c) => c.active).map((c) => ({ id: c.id, name: c.name }))} currentId={s.carrierOrgId} size="default" />}
             <BookingActions bookingId={b.id} reference={s.reference} status={b.status} initialDate={b.slotStart ? fmtDateKey(b.slotStart) : s.expectedDate < today ? today : s.expectedDate} minDate={today} maxDate={addDaysKey(today, cfg.bookingHorizonDays)} freeDocks={freeDocks} />
@@ -69,6 +72,7 @@ export default async function AdminBookingPage({ params }: { params: Promise<{ i
       </div>
       <div className="grid gap-4 xl:grid-cols-[1fr_400px]">
         <div className="grid gap-4">
+          {qr && <GatePass row={row} qr={qr} cfg={cfg} customValues={bookValues.filter((c) => c.value).map(fmtCustom).map((c) => ({ label: c.label, value: c.value ?? "" }))} />}
           <Section title="Booking">
             <DescriptionList
               columns={3}
@@ -160,4 +164,34 @@ export default async function AdminBookingPage({ params }: { params: Promise<{ i
 
 function fmtDateKey(d: Date) {
   return siteDateKey(d);
+}
+
+/** One line telling the admin what to do now, so the flow can be run top to bottom from this page. */
+function nextStep(status: string, carrierName?: string): { title: string; hint: string } {
+  switch (status) {
+    case "DRAFT":
+      return { title: "Assign a carrier", hint: "Pick who brings the truck. After that you can enter the truck details yourself or wait for the carrier." };
+    case "AWAITING_TRUCK_DETAILS":
+      return { title: "Enter truck details", hint: `Fill the form below, or wait for ${carrierName ?? "the carrier"} to do it from their account.` };
+    case "PENDING_APPROVAL":
+      return { title: "Approve the booking", hint: "Approving issues the gate pass with the QR code. The carrier and customer are notified." };
+    case "BOOKED":
+      return { title: "Gate in when the truck arrives", hint: "Security normally scans the pass at the gate. You can gate in from here as well." };
+    case "ARRIVED":
+      return { title: "Call the truck to a dock", hint: "The truck is at the gate. Choose a free dock or send it to the yard." };
+    case "IN_YARD":
+      return { title: "Call the truck to a dock when one is free", hint: "The truck is waiting in the yard queue." };
+    case "AT_DOCK":
+      return { title: "Start handling", hint: "The truck is at the dock. Start the clock when loading or unloading begins." };
+    case "HANDLING":
+      return { title: "Finish handling", hint: "Mark the load complete when loading or unloading is done." };
+    case "COMPLETED":
+      return { title: "Gate out", hint: "Record the truck leaving the site. This closes the booking." };
+    case "GATE_OUT":
+      return { title: "Done", hint: "The truck has left. Nothing more to do on this booking." };
+    case "EXCEPTION":
+      return { title: "Clear the exception", hint: "Decide where the truck continues from, or gate it out with a note." };
+    default:
+      return { title: "Nothing to do", hint: "This booking is closed." };
+  }
 }

@@ -11,7 +11,7 @@ import { FormError } from "@/components/app/form";
 import { SlotPicker, type PickedSlot } from "@/components/app/slot-picker";
 import { useAction } from "@/components/app/use-action";
 import { approveBookingAction, rejectBookingAction, reassignBookingAction, cancelBookingAction } from "@/lib/actions/bookings";
-import { startHandlingAction, finishHandlingAction, sendToYardAction, gateOutAction, clearExceptionAction } from "@/lib/actions/gate";
+import { gateInAction, startHandlingAction, finishHandlingAction, sendToYardAction, gateOutAction, clearExceptionAction } from "@/lib/actions/gate";
 import { CallToDockButton, type DockOption } from "../../_components/call-to-dock-dialog";
 
 type Props = { bookingId: number; reference: string; status: string; initialDate: string; minDate: string; maxDate: string; freeDocks: DockOption[] };
@@ -36,6 +36,7 @@ export function BookingActions({ bookingId, reference, status, initialDate, minD
             <Button variant="destructive" disabled={pending} onClick={() => setDialog("reject")}>Reject</Button>
           </>
         )}
+        {status === "BOOKED" && <Button disabled={pending} onClick={() => run(() => gateInAction(bookingId, "Gated in by admin from the booking page"))}>Gate in</Button>}
         {status === "AT_DOCK" && <Button disabled={pending} onClick={() => run(() => startHandlingAction(bookingId))}>Start handling</Button>}
         {status === "HANDLING" && <Button disabled={pending} onClick={() => run(() => finishHandlingAction(bookingId))}>Finish handling</Button>}
         {status === "COMPLETED" && <Button disabled={pending} onClick={() => run(() => gateOutAction(bookingId))}>Gate out</Button>}

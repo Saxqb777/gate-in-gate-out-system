@@ -38,6 +38,7 @@ export const NAV: Record<UserRole, NavGroup[]> = {
       items: [
         { href: "/admin/bookings", label: "Bookings", icon: ClipboardList },
         { href: "/admin/shipments", label: "Shipments", icon: Package },
+        { href: "/admin/shipments/new", label: "New shipment", icon: ClipboardList, exact: true },
         { href: "/admin/reports", label: "Reports", icon: BarChart3 },
         { href: "/admin/audit", label: "Audit log", icon: ScrollText },
       ],

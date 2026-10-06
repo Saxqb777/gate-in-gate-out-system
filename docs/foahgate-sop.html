@@ -153,8 +153,8 @@
     <p>How each role uses the dock appointment and gate system, step by step, and who is allowed to do what. Written for daily use at the planning desk, the carrier dispatch office, Gate House 1 and the warehouse control room.</p>
     <div class="meta">
       <span>Document <b>SOP FG 01</b></span>
-      <span>Version <b>1.1</b></span>
-      <span>Issued <b>14 September 2026</b></span>
+      <span>Version <b>1.2</b></span>
+      <span>Issued <b>6 October 2026</b></span>
       <span>System <b>foahgate.vercel.app</b></span>
       <span>Owner <b>Warehouse Manager, Al Foah</b></span>
     </div>
@@ -183,7 +183,7 @@
       <h2>How it works in one minute</h2>
       <p>One shipment is one record from the moment a business unit asks for a truck until that truck leaves the gate. Four roles touch it, each at a different stage. The chain below is the order things happen.</p>
       <div class="flow" aria-label="Shipment lifecycle">
-        <div class="node"><div class="eyebrow">Customer</div><div class="t">Raise request</div><div class="s">Cargo, date, references</div></div>
+        <div class="node"><div class="eyebrow">Customer</div><div class="t">Raise request</div><div class="s">Cargo, date, order number</div></div>
         <div class="node"><div class="eyebrow">Customer</div><div class="t">Assign carrier</div><div class="s">Carrier gets a booking link</div></div>
         <div class="node"><div class="eyebrow">Carrier</div><div class="t">Book slot</div><div class="s">Truck, driver, dock and time</div></div>
         <div class="node"><div class="eyebrow">System</div><div class="t">Gate pass</div><div class="s">QR pass, PDF, mobile page</div></div>
@@ -258,7 +258,7 @@
         <li><span><b>Direction.</b> Inbound is a delivery to the warehouse (unloading). Outbound is a dispatch (loading).</span></li>
         <li><span><b>Expected date, priority, cargo type.</b> The cargo type sets how long the truck will hold a dock. Containers reserve two slots. Leave the handling override empty unless the warehouse told you a different time.</span></li>
         <li><span><b>Cargo description, quantity and unit.</b> Write what the dock team will see: "Khalas dates, field bins, 42 bins".</span></li>
-        <li><span><b>References.</b> Inbound: BL number, PO number. Outbound: invoice number. Container and seal if it is containerised. These print on the gate pass.</span></li>
+        <li><span><b>Order number.</b> Your internal order or document number. It prints on the gate pass and shows in every list.</span></li>
         <li><span><b>Carrier.</b> Choose the transport company now, or leave "Assign later". Extra fields under Additional details are set by the warehouse and may be required.</span></li>
         <li><span><b>Raise shipment request.</b> The reference number appears, for example <code>ALF-INB-2026-00142</code>. Quote it in every conversation about this load.</span></li>
       </ol>
@@ -387,7 +387,18 @@
         <div><dt>Sees</dt><dd>Everything, across all customers and carriers.</dd></div>
       </dl>
 
-      <h3>7.1 Daily routine</h3>
+      <h3>7.1 Run a whole shipment from one login</h3>
+      <p>Admin can take a shipment from request to gate out without switching accounts. Useful for phone bookings, walk ins and demonstrations. The booking page always shows a <b>Next step</b> box at the top with the one action to take now.</p>
+      <ol class="steps">
+        <li><span><b>Shipments, New shipment.</b> Choose the business unit, cargo and order number. Raise it. You land on the booking.</span></li>
+        <li><span><b>Assign carrier.</b> Pick the transport company. The carrier is notified and gets the booking link as usual.</span></li>
+        <li><span><b>Enter truck details</b> in the form on the same page, or wait for the carrier to do it from their account. Pick a slot on the grid and confirm.</span></li>
+        <li><span><b>Approve</b> (approval mode only). The gate pass with QR code appears on the page. Print it or open the PDF.</span></li>
+        <li><span><b>Gate in</b> when the truck arrives. Security normally scans the pass at the gate; the button on the booking page does the same thing. The system sends the truck to its dock, a free dock, or the yard.</span></li>
+        <li><span><b>Call to dock, Start handling, Finish handling, Gate out.</b> Each appears in turn in the Next step box. Done means the truck has left.</span></li>
+      </ol>
+
+      <h3>7.2 Daily routine</h3>
       <ol class="steps">
         <li><span><b>Start of day, Overview.</b> Booked today, still to arrive, exceptions, no shows. Needs attention lists approvals, exceptions, yard trucks and overdue arrivals with a link to each.</span></li>
         <li><span><b>Keep the Dock board open</b> on the control room screen (the warehouse operations account lands there). It refreshes every 15 seconds. Each dock shows the truck on it, how long it has been there, and the next three bookings.</span></li>
@@ -396,7 +407,7 @@
         <li><span><b>End of day, Run no show check</b> on the overview. It also runs automatically every morning at 06:00.</span></li>
       </ol>
 
-      <h3>7.2 Decisions on a booking</h3>
+      <h3>7.3 Decisions on a booking</h3>
       <p>Open any booking from Bookings, the dock board, the yard, or a notification. The action bar shows only the actions that make sense for its current status.</p>
       <ul>
         <li><b>Approve or Reject</b> (approval mode only). Rejecting needs a reason and releases the slot.</li>
@@ -407,14 +418,14 @@
         <li>The Audit trail at the bottom of the page shows every change, who made it, when, and what changed.</li>
       </ul>
 
-      <h3>7.3 Slot planner</h3>
+      <h3>7.4 Slot planner</h3>
       <ul>
         <li>One day at a time, every dock, every slot. Booked cells link to the booking.</li>
         <li><b>Block</b> a slot with a reason (forklift maintenance, stock count). Carriers cannot book it. <b>Unblock</b> to reopen.</li>
         <li>Taking a whole dock out of service is done under Docks, status Maintenance or Blocked. Bookings already on that dock must be moved from the bookings list.</li>
       </ul>
 
-      <h3>7.4 Setup pages</h3>
+      <h3>7.5 Setup pages</h3>
       <div class="two">
         <div class="card"><h4>Docks</h4><p>Code, name, type (inbound, outbound, both), status, notes. Type decides which shipments a dock is offered for.</p></div>
         <div class="card"><h4>Cargo types</h4><p>Each type carries handling minutes. This is how much dock time a booking reserves. Set these with the dock team.</p></div>
