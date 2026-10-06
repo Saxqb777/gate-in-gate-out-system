@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "./logo";
 import { UserMenu } from "./user-menu";
 import { SecurityTabs } from "./security-tabs";
@@ -9,7 +10,10 @@ export function SecurityShell({ user, children }: { user: SessionUser; children:
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-20 border-b bg-card">
         <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-3">
-          <Logo />
+          <div className="flex items-center gap-3">
+            <Logo />
+            {user.role === "admin" && <Link href="/admin" className="text-xs text-primary-deep hover:underline">Back to admin</Link>}
+          </div>
           <UserMenu user={user} />
         </div>
         <div className="mx-auto max-w-3xl px-3 pb-2">

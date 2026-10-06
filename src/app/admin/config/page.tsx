@@ -3,6 +3,7 @@ import { getConfig, CONFIG_DEFS, CONFIG_GROUP_LABELS, type ConfigDef } from "@/l
 import { PageHeader } from "@/components/app/page-header";
 import { Section } from "@/components/app/description-list";
 import { ConfigGroupForm } from "./config-form";
+import { DemoReset } from "./demo-reset";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Configuration" };
@@ -28,6 +29,9 @@ export default async function ConfigPage() {
             <ConfigGroupForm defs={CONFIG_DEFS.filter((d) => d.group === g).sort((a, b) => a.sortOrder - b.sortOrder)} values={cfg.raw} warning={g === "slots" ? "Changing the slot grid regenerates open future slots. Existing bookings keep their times." : undefined} />
           </Section>
         ))}
+        <Section title="Demo data" description="For demonstrations only. Reset the operational data between client meetings.">
+          <DemoReset />
+        </Section>
       </div>
     </>
   );

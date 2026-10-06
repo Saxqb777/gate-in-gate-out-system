@@ -8,7 +8,7 @@ export const metadata = { title: "Scan" };
 type SearchParams = Record<string, string | string[] | undefined>;
 
 export default async function SecurityScanPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
-  await requireRole("security");
+  await requireRole("security", "admin");
   const sp = await searchParams;
   const raw = Array.isArray(sp.q) ? sp.q[0] : sp.q;
   const q = raw?.trim() || null;

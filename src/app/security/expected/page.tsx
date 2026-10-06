@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Expected today" };
 
 export default async function ExpectedPage() {
-  await requireRole("security");
+  await requireRole("security", "admin");
   const today = siteDateKey();
   const rows = await listBookings({ statuses: ["BOOKED", "PENDING_APPROVAL"], date: today });
   const noShows = await listBookings({ statuses: ["NO_SHOW"], date: today });

@@ -3,11 +3,12 @@ import { verifySessionToken, SESSION_COOKIE } from "@/lib/auth/jwt";
 import { ROLE_HOME } from "@/lib/auth/roles";
 
 const PUBLIC_PREFIXES = ["/login", "/pass/", "/book/", "/api/gate-pass/", "/api/cron/", "/api/health", "/api/setup", "/_next", "/favicon", "/brand"];
-const ROLE_PREFIX: Record<string, string> = {
-  "/admin": "admin",
-  "/carrier": "carrier",
-  "/customer": "customer",
-  "/security": "security",
+// Admin may also open the security gate screens, so one admin login can run the whole flow.
+const ROLE_PREFIX: Record<string, string[]> = {
+  "/admin": ["admin"],
+  "/carrier": ["carrier"],
+  "/customer": ["customer"],
+  "/security": ["security", "admin"],
 };
 
 export async function middleware(req: NextRequest) {
@@ -31,9 +32,9 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  for (const [prefix, role] of Object.entries(ROLE_PREFIX)) {
+  for (const [prefix, roles] of Object.entries(ROLE_PREFIX)) {
     if (pathname === prefix || pathname.startsWith(prefix + "/")) {
-      if (user.role !== role) {
+      if (!roles.includes(user.role)) {
         const url = req.nextUrl.clone();
         url.pathname = ROLE_HOME[user.role];
         return NextResponse.redirect(url);

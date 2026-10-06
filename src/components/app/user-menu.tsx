@@ -1,6 +1,7 @@
 "use client";
 
-import { LogOut, ChevronDown } from "lucide-react";
+import Link from "next/link";
+import { LogOut, ChevronDown, LayoutDashboard, Warehouse, ParkingSquare, QrCode } from "lucide-react";
 import { logoutAction } from "@/lib/actions/auth";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ROLE_LABEL, type SessionUser } from "@/lib/auth/roles";
@@ -33,6 +34,16 @@ export function UserMenu({ user }: { user: SessionUser }) {
             {user.title ? `, ${user.title}` : ""}
           </div>
         </DropdownMenuLabel>
+        {user.role === "admin" && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">Switch view</DropdownMenuLabel>
+            <DropdownMenuItem asChild><Link href="/admin"><LayoutDashboard className="size-4" />Admin overview</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/admin/dock-board"><Warehouse className="size-4" />Dock board</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/admin/yard"><ParkingSquare className="size-4" />Yard</Link></DropdownMenuItem>
+            <DropdownMenuItem asChild><Link href="/security"><QrCode className="size-4" />Security gate</Link></DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={() => logoutAction()}>
           <LogOut className="size-4" />

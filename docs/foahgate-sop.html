@@ -153,7 +153,7 @@
     <p>How each role uses the dock appointment and gate system, step by step, and who is allowed to do what. Written for daily use at the planning desk, the carrier dispatch office, Gate House 1 and the warehouse control room.</p>
     <div class="meta">
       <span>Document <b>SOP FG 01</b></span>
-      <span>Version <b>1.2</b></span>
+      <span>Version <b>1.3</b></span>
       <span>Issued <b>6 October 2026</b></span>
       <span>System <b>foahgate.vercel.app</b></span>
       <span>Owner <b>Warehouse Manager, Al Foah</b></span>
@@ -398,12 +398,14 @@
         <li><span><b>Call to dock, Start handling, Finish handling, Gate out.</b> Each appears in turn in the Next step box. Done means the truck has left.</span></li>
       </ol>
 
+      <p><b>Switch view.</b> The menu under your name has Switch view: Admin overview, Dock board, Yard and Security gate. The Security gate opens the same scan screen the gate house uses, so an admin can scan a pass and gate a truck in or out without a second login. Back to admin returns you.</p>
+
       <h3>7.2 Daily routine</h3>
       <ol class="steps">
         <li><span><b>Start of day, Overview.</b> Booked today, still to arrive, exceptions, no shows. Needs attention lists approvals, exceptions, yard trucks and overdue arrivals with a link to each.</span></li>
         <li><span><b>Keep the Dock board open</b> on the control room screen (the warehouse operations account lands there). It refreshes every 15 seconds. Each dock shows the truck on it, how long it has been there, and the next three bookings.</span></li>
         <li><span><b>At the dock:</b> Start handling when work begins, Finish handling when done. The truck then shows Completed and security can gate it out.</span></li>
-        <li><span><b>Yard board:</b> Call to dock when a compatible dock frees up. Choose the dock or take the first free one.</span></li>
+        <li><span><b>Yard board:</b> shows waiting, longest wait, free docks and how many trucks can be called now. Each row lists the free docks that match its direction. Call to dock on position 1 first. Rows waiting over 30 minutes are highlighted.</span></li>
         <li><span><b>End of day, Run no show check</b> on the overview. It also runs automatically every morning at 06:00.</span></li>
       </ol>
 
@@ -432,6 +434,7 @@
         <div class="card"><h4>Organisations and Users</h4><p>Add carriers and business units, then their users. A user's role must match the organisation type. Disable users who leave, do not delete.</p></div>
         <div class="card"><h4>Custom fields</h4><p>Add fields to the customer shipment form or the carrier booking form: text, number, date, dropdown, checkbox, document reference. They appear immediately and print on the pass.</p></div>
         <div class="card"><h4>Configuration</h4><p>Operating hours, slot length, buffer, max concurrent trucks, early arrival rule, late tolerance, no show timer, approval mode, booking horizon, lead time, cancel cutoff, truck types, units, gate pass text.</p></div>
+        <div class="card"><h4>Demo data</h4><p>At the bottom of Configuration. Reload demo data wipes every shipment and booking and loads fresh demo bookings dated around today. Master data is kept. For demonstrations only, never after go live.</p></div>
         <div class="card"><h4>Reports and Audit log</h4><p>Trucks per day, turnaround, dock utilisation, on time versus late by carrier, no shows, exceptions, with CSV download. The audit log is filterable and cannot be edited.</p></div>
       </div>
       <div class="rule warn">

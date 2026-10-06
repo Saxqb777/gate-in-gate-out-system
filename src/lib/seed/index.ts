@@ -184,7 +184,7 @@ async function seedBooking(
       blNumber: input.direction === "inbound" ? `BL-${year}-${7000 + input.idx}` : null,
       containerNumber: cargo.type === "CONTAINER" ? `MSCU${(4000000 + input.idx * 37).toString()}` : null,
       sealNumber: cargo.type === "CONTAINER" ? `SL${(880000 + input.idx * 13).toString()}` : null,
-      poNumber: input.direction === "inbound" ? `PO-${45000 + input.idx}` : null,
+      poNumber: `ORD-${year}-${45000 + input.idx}`,
       invoiceNumber: input.direction === "outbound" ? `INV-${year}-${11000 + input.idx}` : null,
       expectedDate: input.date,
       priority: input.priority ?? "normal",
@@ -363,6 +363,32 @@ export async function runSeed(db: Db, log: (m: string) => void = console.log) {
   await reset(db);
   log("Seeding organisations, users, docks, config...");
   const orgs = await seedStatic(db);
+  return seedDemoBookings(db, orgs, log);
+}
+
+/**
+ * Demo reset from the admin screen: wipes shipments, bookings, events, audit rows and
+ * notifications, keeps organisations, users, docks, cargo types, config and custom fields,
+ * then loads fresh demo bookings dated around today. Needs the seeded organisations to exist.
+ */
+export async function reloadDemoData(db: Db, log: (m: string) => void = console.log) {
+  const rows = await db.select().from(organisations);
+  const byCode = (code: string) => {
+    const o = rows.find((r) => r.code === code);
+    if (!o) throw new Error(`Demo data needs the organisation with code ${code}. Add it back under Organisations or reload from the setup endpoint.`);
+    return o;
+  };
+  const orgs = { agthia: byCode("AGTHIA"), alWafi: byCode("ALWAFI"), emirates: byCode("EMHAUL"), agthiaFleet: byCode("AGFLEET"), alFoah: byCode("ALFOAH"), grandMills: byCode("GRANDMILLS") };
+  const [admin] = await db.select().from(users).where(eq(users.email, "admin@agthia.ae"));
+  const [security] = await db.select().from(users).where(eq(users.email, "security@agthia.ae"));
+  if (!admin || !security) throw new Error("Demo data needs the seeded admin@agthia.ae and security@agthia.ae users.");
+  log("Removing shipments, bookings, events and notifications...");
+  await cleanTransactionalData(db);
+  return seedDemoBookings(db, orgs, log);
+}
+
+async function seedDemoBookings(db: Db, orgs: Awaited<ReturnType<typeof seedStatic>>, log: (m: string) => void) {
+  seedState = 20260913;
   const [admin] = await db.select().from(users).where(eq(users.email, "admin@agthia.ae"));
   const [security] = await db.select().from(users).where(eq(users.email, "security@agthia.ae"));
 

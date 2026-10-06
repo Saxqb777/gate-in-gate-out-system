@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Inside now" };
 
 export default async function InsidePage() {
-  await requireRole("security");
+  await requireRole("security", "admin");
   const rows = (await listBookings({ statuses: INSIDE_STATUSES })).sort((a, b) => (a.booking.arrivedAt?.getTime() ?? 0) - (b.booking.arrivedAt?.getTime() ?? 0));
   const now = new Date();
   return (
